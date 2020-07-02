@@ -1,7 +1,9 @@
 static mut debug : bool = false;
+
 fn max_satisfied(customers: Vec<i32>, grumpy: Vec<i32>, x: i32) -> i32 {
     definitely_taken(&customers, &grumpy) + best_gain(&customers, &grumpy, x)
 }
+
 fn definitely_taken(customers: &Vec<i32>, grumpy: &Vec<i32>) -> i32 {
 
     unsafe {
@@ -47,7 +49,6 @@ fn best_gain(customers: &Vec<i32>, grumpy: &Vec<i32>, x: i32) -> i32 {
         })
 }
 
-// debugging happens here
 fn bugs() {
     assert_eq!(
         definitely_taken(&vec![1, 2, 3], &vec![0, 0, 1]),
@@ -66,7 +67,7 @@ fn bugs() {
 
 fn main() {
 
-    // complete tests
+    // completed tests
     assert_eq!(
         3, max_satisfied(vec![1, 2, 3], vec![1, 1, 1], 1)
     );
