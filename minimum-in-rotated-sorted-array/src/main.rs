@@ -1,23 +1,38 @@
-fn is_rotation_index(vec: &Vec<i32>, idx: usize) -> bool {
-    // size N, id 0
-    // vec[0] vs vec[N - 1]
-    // size N, id 1
-    // vec[1] vs vec[N - 2]
-    // size N, id N / 2 - 1
-    // vec[N / 2 - 1] vs vec[N - N / 2 + 1 = N / 2 + 1 or N / 2] -> okay
-    // size N, id N / 2
-    // vec[N / 2] vs vec[N - N / 2 = N / 2 or N / 2 - 1] -> forbidden
-    assert_eq!(idx < vec.len() / 2, true);
-    vec[idx] > vec[vec.len() - idx - 1]
-}
+use itertools::Itertools;
+use superslice::*;
 
 fn solve(vec: &Vec<i32>) {
-    // rust bin search with custom predicate; bin search on
-    // the two equally distant elements from the center of array
+    let reversed_vec =
+        vec
+        .iter()
+        .rev();
 
+    let cooked =
+        reversed_vec
+        .zip(vec.iter())
+        .take(vec.len() / 2)
+        .collect::<Vec<_>>()
+        ;
+
+    println!("{:?}", cooked);
+
+    let compare_tuples = | e : &(&i32, &i32) | {
+        if e.0 > e.1 {
+            std::cmp::Ordering::Less
+        } else {
+            std::cmp::Ordering::Greater
+        }
+    };
+
+    let result =
+        cooked
+        .lower_bound_by(
+            compare_tuples
+        );
+
+    println!("{:?}", result);
 }
 
 fn main() {
-
-    println!("Hello, world!");
+    solve(&vec![1, 2, 3]);
 }
