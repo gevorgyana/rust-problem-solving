@@ -11,11 +11,11 @@ fn solve(vec: &Vec<i32>) {
         reversed_vec
         .zip(vec.iter())
         .take(vec.len() / 2)
-        .collect::<Vec<_>>()
-        ;
+        .collect::<Vec<_>>();
 
     println!("{:?}", cooked);
 
+    /*
     let compare_tuples = | e : &(&i32, &i32) | {
         if e.0 > e.1 {
             std::cmp::Ordering::Less
@@ -31,8 +31,19 @@ fn solve(vec: &Vec<i32>) {
         );
 
     println!("{:?}", result);
+     */
 }
 
 fn main() {
-    solve(&vec![1, 2, 3]);
+    let v = vec!((2, 1), (3, 2), (2, 5));
+    let f = | e: &(i32, i32) | {
+        if e.0 > e.1 {
+            std::cmp::Ordering::Less
+        } else {
+            std::cmp::Ordering::Greater
+        }
+    };
+    let g = v.upper_bound_by(f);
+    println!("{:?}", g);
+    // solve(&vec![1, 2, 3]);
 }
