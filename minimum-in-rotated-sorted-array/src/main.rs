@@ -29,15 +29,28 @@ fn rotation_index(vec: &Vec<i32>) -> i32 {
 }
 
 fn main() {
+    // not moved at all
     assert_eq!(rotation_index(&vec![1, 2, 3, 4]), 0);
-    // A
+    // moved around the first hole
     assert_eq!(rotation_index(&vec![2, 3, 4, 1]), 1);
+    // moved around the central hole or element, as the index is out of range
+    // [0..N / 2 - 1]
     assert_eq!(rotation_index(&vec![3, 4, 1, 2]), 2);
-    // B
+    // moved around the third hole, which is symmetric with the first hole,
+    // the function chooses the lower number, hence 1
     assert_eq!(rotation_index(&vec![4, 1, 2, 3]), 1);
-    // A ~ B -> this is represented by a number 1
-    // there will be N / 2 numbers to denominate rotation with the possibility
-    // of losing the direction information, which can be checked anyway
 
+    // not moved at all
     assert_eq!(rotation_index(&vec![1, 2, 3, 4, 5]), 0);
+    // moved aroung the first hole
+    assert_eq!(rotation_index(&vec![2, 3, 4, 5, 1]), 1);
+    // moved around the hole that is located to the left from the central
+    // element (index out of range)
+    assert_eq!(rotation_index(&vec![3, 4, 5, 1, 2]), 2);
+    // moved around the hole that is located to the right from the central
+    // element (index out of range)
+    assert_eq!(rotation_index(&vec![4, 5, 1, 2, 3]), 2);
+    // symmetric to the prev 1-case: if reversed around the first hole and is of
+    // form XY, then current vec is YX, that is symmetric rotation.
+    assert_eq!(rotation_index(&vec![5, 1, 2, 3, 4]), 1);
 }
