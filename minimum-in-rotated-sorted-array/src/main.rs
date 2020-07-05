@@ -71,4 +71,12 @@ fn main() {
     // form XY, then current vec is YX, that is symmetric rotation.
     assert_eq!(rotation_index(&vec![5, 1, 2, 3, 4]), 1);
     assert_eq!(minimum_in_rotated_array(1, &vec![5, 1, 2, 3, 4]), 1);
+
+    // gleb pylypets tests lol :D
+    assert_eq!(rotation_index(&vec![4, 5, 6, 4, 4]), 2);
+    assert_eq!(minimum_in_rotated_array(2, &vec![4, 5, 6, 4, 4]), 4);
+
+    // gleb 2
+    assert_eq!(rotation_index(&vec![4, 5, 6, 6, 4, 4]), 2);
+    assert_eq!(minimum_in_rotated_array(2, &vec![4, 5, 6, 6, 4, 4]), 4);
 }
