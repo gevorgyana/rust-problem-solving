@@ -38,8 +38,6 @@ fn minimum_in_rotated_array(rotation_point: i32, vec: &Vec<i32>) -> i32 {
     }
 }
 
-mod manual;
-
 fn main() {
     // not moved at all
     assert_eq!(rotation_index(&vec![1, 2, 3, 4]), 0);
