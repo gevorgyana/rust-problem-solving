@@ -1,3 +1,6 @@
+UPDATE; this text also talks about ternary search, but that approach will not work, see
+the updated explanation in ternary/ directory to understand why, if you need to.
+
 `bare` is the same as `libs` except for `bare` not using external crates.
 
 The algorithm uses binary search to find the first mismatch, which is guaranteed to be

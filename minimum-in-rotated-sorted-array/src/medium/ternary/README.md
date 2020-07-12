@@ -49,3 +49,30 @@ is.
 3) The left index is less than the right one -> symmetric to the prev. case.
 
 Once we hit a range of a small constant, like 2, we can choose the min value from them.
+
+UPDATE; THIS IS NOT A UNIMODAL function; the suggested approach will never work! here is
+why;
+
+ternary search works for unimodal functions, this is well-known. The look like this:
+
+```
+        +
+    ...   ...
+  +           +
++               +
+```
+
+but the function from this problem has the following structure:
+```
+      +
+  ...
++            +
+         ...
+       +
+```
+
+The first one is unimodal, because it decreases monotonically form the extreme point,
+but the second one is not - because it drops from the extreme point of maximum to the
+extreme point of minimum. It means that there is no way to solve this problem in general
+using ternary search. Some of the tests passed though. It also shows that a unimodal
+function must be either unimodal with respect to maximum or minimum.

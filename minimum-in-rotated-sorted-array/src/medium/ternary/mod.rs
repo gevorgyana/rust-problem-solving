@@ -34,7 +34,6 @@ pub fn find_min(nums: Vec<i32>) -> i32 {
 
     let mut m1: usize = 0;
     let mut m2: usize = vec.len() - 1;
-    let mut first: bool = true;
 
     loop {
         if vec.len() < 3 {
@@ -53,12 +52,8 @@ pub fn find_min(nums: Vec<i32>) -> i32 {
             break;
         };
 
-        if first == false {
-            m1 = vec.len() / 3 - 1;
-            m2 = vec.len() - vec.len() / 3;
-        } else {
-            first = false;
-        }
+        m1 = vec.len() / 3 - 1;
+        m2 = vec.len() - vec.len() / 3;
 
         println!("{:?}", vec);
         println!("Comparing {} ({}) to {} ({})", vec[m1], m1, vec[m2], m2);
