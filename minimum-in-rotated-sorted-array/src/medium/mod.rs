@@ -1,2 +1,2 @@
-mod using_superslice;
-mod manual;
+mod ternary;
+mod binary;
