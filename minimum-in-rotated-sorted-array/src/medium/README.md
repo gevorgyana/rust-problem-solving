@@ -1,3 +1,5 @@
+There are two ways to solve this problem - see the subdirectories.
+
 The algorithm uses the binary search procedure to find the first mismatch, which is
 guaranteed to be followed only by mismatches. This approach stops working where there
 are also non-distinguishable elemenets in the array, in this case equal numbers. It stops
