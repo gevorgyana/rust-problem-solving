@@ -1,11 +1,16 @@
-// how to use mut refs in enumerate()
+// read 2d vector from file into Vec
+extern crate serde;
 
 fn main() {
-    let mut v: Vec<Vec<i32>> = vec![vec![1, 2, 3]];
-    for (a, mut b) in v.iter_mut().enumerate() {
-        // this is not possible, so in current problem instead I am
-        // extending the existing vector instead of creating a new one
-        // b = &mut vec![1];
-        b.reserve(10);
+    let t: String
+        = std::fs::read_to_string("test").unwrap().parse().unwrap();
+    let v: Result<Vec<Vec<i32>>, _> = serde_json::from_str(
+        &t
+    );
+    match v {
+        Ok(inner) => {
+            println!("Done {:?}", inner);
+        },
+        _ => (),
     }
 }
