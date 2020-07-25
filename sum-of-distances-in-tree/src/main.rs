@@ -108,17 +108,30 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         if parent[current_node as usize] == -1 {
             continue;
         }
+
+        println!("!{}", current_node);
+
         seen_node_times[current_node as usize] += 1;
         if graph[current_node as usize].len() >
             seen_node_times[current_node as usize] as usize {
             continue;
         }
 
+        println!("!..survived");
+
         // logic
         for j in &graph[parent[current_node as usize] as usize] {
+            println!("!old value {}", down[parent[current_node as usize] as usize]);
+
+            println!("!adding d = {}, c = {}",
+                     down[*j as usize],
+                    hm_nodes_in_subtree[*j as usize]
+            );
+
             down[parent[current_node as usize] as usize]
                 += (down[*j as usize] +
-                    hm_nodes_in_subtree[*j as usize] + 1);
+                    hm_nodes_in_subtree[*j as usize]);
+            println!("!new value {}", down[parent[current_node as usize] as usize]);
         }
 
         q.push_back(parent[current_node as usize]);
@@ -134,11 +147,30 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
 
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
+
+        println!("?current node{}", current_node);
+
+        println!("? down of parent {} - down of current node {} - hm nodes in current {}",
+            down[parent[current_node as usize] as usize],
+            down[current_node as usize],
+            hm_nodes_in_subtree[current_node as usize]
+        );
+
         up[current_node as usize]
-            = down[parent[current_node as usize] as usize] -
-            down[current_node as usize] +
+            =
+        // sum of distances to all nodes coming from the parent
+        // as if the connection to current_node did not exist
+            down[parent[current_node as usize] as usize] -
+            down[current_node as usize] -
+            hm_nodes_in_subtree[current_node as usize] +
+
+        // now that we shift one node away from all those, as usual
+        // we mark that we are one node away from so many nodes
             hm_nodes_in_subtree[parent[current_node as usize] as usize] -
-            hm_nodes_in_subtree[current_node as usize];
+            hm_nodes_in_subtree[current_node as usize] +
+
+        // and finally we are at distance 1 from the old node
+            1;
 
         for i in &graph[current_node as usize] {
             q.push_back(*i);
