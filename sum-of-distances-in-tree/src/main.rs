@@ -3,30 +3,24 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
 
     // The sum of distances from a node to all the nodes in the tree
     // below it.
-    let mut down: Vec<i32>
-        = itertools::repeat_n::<i32>(0, n as usize)
-        .collect::<Vec<i32>>();
+    let mut down: Vec<i32> = [0].repeat(n as usize);
 
     // The sum of distances from a node to all the nodes in the tree
     // above it.
-    let mut up: Vec<i32>
-            = itertools::repeat_n::<i32>(0, n as usize)
-        .collect::<Vec<i32>>();
+    let mut up: Vec<i32> = [0].repeat(n as usize);
 
     // How many nodes in the subtree for each of the nodes in the
     // tree.
-    let mut hm_nodes_in_subtree: Vec<i32>
-        = itertools::repeat_n::<i32>(0, n as usize)
-        .collect::<Vec<i32>>();
+    let mut hm_nodes_in_subtree: Vec<i32> = [0].repeat(n as usize);
 
     // -1 for no parent (root)
-    let mut parent: Vec<i32>
-        = itertools::repeat_n::<i32>(-1, n as usize)
-        .collect::<Vec<i32>>();
+    let mut parent: Vec<i32> = [-1].repeat(n as usize);
 
-    let mut graph: Vec<Vec<i32>>
-        = itertools::repeat_n::<Vec<i32>>(vec![], n as usize)
-        .collect::<Vec<_>>();
+    let mut graph: Vec<Vec<i32>> = vec![];
+    graph.reserve(n as usize);
+    for i in 0..n {
+        graph.push(vec![]);
+    }
 
     // Queue reused for traversals
     let mut q: std::collections::vec_deque::VecDeque::<i32>
@@ -64,8 +58,8 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         q.push_back(*i);
     }
     let mut seen_node_times: Vec<i32>
-        = itertools::repeat_n::<i32>(0, n as usize)
-        .collect::<Vec<i32>>();
+        = [0].repeat(n as usize);
+
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
         if parent[current_node as usize] == -1 {
@@ -86,9 +80,7 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         down[*i as usize] = 0;
         q.push_back(*i);
     }
-    seen_node_times
-        = itertools::repeat_n::<i32>(0, n as usize)
-        .collect::<Vec<i32>>();
+    seen_node_times = [0].repeat(n as usize);
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
         if parent[current_node as usize] == -1 ||
@@ -105,7 +97,7 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         q.push_back(parent[current_node as usize]);
     }
 
-    println!("dows {:?}", down);
+    // println!("dows {:?}", down);
 
     // Fill {up}
     for i in &graph[0] {
@@ -134,13 +126,13 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         }
     }
 
-    println!(" ups {:?}", up);
+    // println!(" ups {:?}", up);
 
     for (i, v) in up.iter().enumerate() {
         down[i] += v;
     }
 
-    println!("res: {:?}", down);
+    // println!("res: {:?}", down);
 
     down
 }
