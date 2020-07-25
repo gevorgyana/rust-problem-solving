@@ -132,6 +132,25 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
 
     println!("{:?}", down);
 
+    // Fill {up}
+
+    for i in &graph[0] {
+        q.push_back(*i);
+    }
+
+    while q.len() > 0 {
+        let current_node = q.pop_front().unwrap();
+        up[current_node as usize]
+            = down[parent[current_node as usize] as usize] -
+            down[current_node as usize] +
+            hm_nodes_in_subtree[parent[current_node as usize] as usize] -
+            hm_nodes_in_subtree[current_node as usize];
+
+        for i in &graph[current_node as usize] {
+            q.push_back(*i);
+        }
+    }
+
     vec![]
 }
 
