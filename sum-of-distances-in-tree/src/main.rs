@@ -48,7 +48,6 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
 
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
-        println!("visited {}", current_node);
         if graph[current_node as usize].len() == 0 {
             leaves.push(current_node);
             continue;
@@ -58,7 +57,7 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         }
     }
 
-    println!("{:?}", leaves);
+    println!(" leaves {:?}", leaves);
 
     // Now start moving from the leaves and fill in the
     // {hm_nodes_in_subtree}.
@@ -75,26 +74,23 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         .collect::<Vec<i32>>();
 
     while q.len() > 0 {
-        // traversal
         let current_node = q.pop_front().unwrap();
         if parent[current_node as usize] == -1 {
             continue;
         }
-
-        // logic
-        hm_nodes_in_subtree[parent[current_node as usize] as usize]
-            += (hm_nodes_in_subtree[current_node as usize] + 1);
-
-        // traversal
         seen_node_times[current_node as usize] += 1;
         if graph[current_node as usize].len() >
             seen_node_times[current_node as usize] as usize {
             continue;
         }
+
+        hm_nodes_in_subtree[parent[current_node as usize] as usize]
+            += (hm_nodes_in_subtree[current_node as usize] + 1);
+
         q.push_back(parent[current_node as usize]);
     }
 
-    println!("{:?}", hm_nodes_in_subtree);
+    println!(" how many nodes in subtrees {:?}", hm_nodes_in_subtree);
 
     // Start counting {down} values from the leaves.
 
@@ -118,8 +114,6 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
             continue;
         }
 
-        println!("currently here {}", current_node);
-
         // logic
         for j in &graph[parent[current_node as usize] as usize] {
             down[parent[current_node as usize] as usize]
@@ -130,7 +124,7 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         q.push_back(parent[current_node as usize]);
     }
 
-    println!("{:?}", down);
+    println!("dows {:?}", down);
 
     // Fill {up}
 
@@ -151,18 +145,78 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         }
     }
 
+    println!(" ups {:?}", up);
+
     vec![]
 }
 
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    fn chain() {
+        let edges = vec![
+            vec![
+                // always 2 items in an inner array
+                0, 1
+            ],
+            vec![
+                1, 2
+            ],
+        ];
+        sum_of_distances_in_tree(3, edges);
+    }
+
+    // leetcode example 1
+
+    fn ex1() {
+        let edges = vec![
+            vec![
+                0, 1
+            ],
+            vec![
+                0, 2
+            ],
+            vec![
+                2, 3
+            ],
+            vec![
+                2, 4
+            ],
+            vec![
+                2, 5
+            ],
+        ];
+        sum_of_distances_in_tree(6, edges);
+    }
+
+    #[test]
+    fn cs1() {
+        let edges = vec![
+            vec![
+                0, 1
+            ],
+            vec![
+                0, 2
+            ],
+            vec![
+                1, 3
+            ],
+            vec![
+                1, 4
+            ],
+            vec![
+                3, 5
+            ],
+            vec![
+                2, 6
+            ],
+        ];
+        sum_of_distances_in_tree(7, edges);
+    }
+}
+
+
 fn main() {
-    let edges = vec![
-        vec![
-            // always 2 items in an inner array
-            0, 1
-        ],
-        vec![
-            1, 2
-        ],
-    ];
-    sum_of_distances_in_tree(3, edges);
+
 }
