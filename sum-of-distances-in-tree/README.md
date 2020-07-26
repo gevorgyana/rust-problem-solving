@@ -5,3 +5,5 @@ searches to accumulate the sum of distances to all other nodes on the
 fly. This would take quadratic time.
 
 Here is the proposed solution that would work in linear time.
+See the solution itself.
+The submission: https://leetcode.com/submissions/detail/371884663/
