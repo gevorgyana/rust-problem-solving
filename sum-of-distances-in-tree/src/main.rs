@@ -95,6 +95,10 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
     println!("how many nodes in subtrees {:?}", hm_nodes_in_subtree);
 
     // Fill {down}
+    // Update (bug): need to walk up the node, then bring its values
+    // to the upper {down} value, then stop if we are not the last one
+    // to visit this node. Otherwise some of the nodes might not be
+    // ready.
     for i in &leaves {
         down[*i as usize] = 0;
         q.push_back(*i);
@@ -102,20 +106,29 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
     seen_node_times = [0].repeat(n as usize);
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
-        if parent[current_node as usize] == -1 ||
-            seen_node_times[parent
-                            [current_node as usize] as usize] != 0
-        { continue; }
-        seen_node_times[parent[current_node as usize] as usize] = 1;
-        for j in &graph[parent[current_node as usize] as usize] {
-            if *j == parent[parent[current_node as usize] as usize] {
+        println!("!current node {}", current_node);
+        if parent[current_node as usize] == -1 {
+            println!("!skip as we are the root");
                 continue;
-            }
-            down[parent[current_node as usize] as usize]
-                += down[*j as usize] +
-                hm_nodes_in_subtree[*j as usize] + 1;
         }
-        q.push_back(parent[current_node as usize]);
+        seen_node_times[parent[current_node as usize] as usize] += 1;
+        println!("!Visited the parent this {} many times",
+                 seen_node_times[parent[current_node as usize] as usize]
+        );
+        println!("!Adding {} as the answer for {}",
+                 down[current_node as usize], current_node);
+
+        down[parent[current_node as usize] as usize]
+            += down[current_node as usize] +
+            hm_nodes_in_subtree[current_node as usize] + 1;
+
+        if seen_node_times[parent[current_node as usize] as usize]
+            ==
+            graph[parent[current_node as usize] as usize].len() as i32 - 1
+        {
+                println!("!Pushing {}", parent[current_node as usize]);
+                q.push_back(parent[current_node as usize]);
+        }
     }
     println!("dows {:?}", down);
 
@@ -127,6 +140,16 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
         println!("_current node {}", current_node);
+
+        println!("_ sum of distances from the parent to every node
+below {}",
+                down[parent[current_node as usize] as usize] -
+                down[current_node as usize] -
+                hm_nodes_in_subtree[current_node as usize] - 1 );
+
+        println!("Sum of distances from the parent to every node above
+it {}", up[parent[current_node as usize] as usize]);
+
         up[current_node as usize]
             =
 
@@ -164,6 +187,7 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
 #[cfg(test)]
 mod test {
     use super::*;
+
     fn chain() {
         let edges = vec![
             vec![
@@ -200,7 +224,7 @@ mod test {
         assert_eq!(vec![8,12,6,10,10,10],
                    sum_of_distances_in_tree(6, edges));
     }
-/*
+
     #[test]
     fn cs1() {
         let edges = vec![
@@ -272,7 +296,27 @@ mod test {
         assert_eq!(vec![6,6,4,4],
                    sum_of_distances_in_tree(4, edges));
     }
-*/
+
+    #[test]
+    fn lc5() {
+        let edges = vec![
+            vec![
+                0, 4
+            ],
+            vec![
+                1, 3
+            ],
+            vec![
+                1, 2
+            ],
+            vec![
+                0, 2
+            ],
+        ];
+        assert_eq!(vec![7,7,6,10,10],
+                   sum_of_distances_in_tree(5, edges));
+    }
+
 }
 
 
