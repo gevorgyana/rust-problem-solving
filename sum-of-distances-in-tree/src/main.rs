@@ -26,8 +26,7 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
     let mut q: std::collections::vec_deque::VecDeque::<i32>
         = std::collections::vec_deque::VecDeque::<i32>::new();
 
-    // Convert to a more useful representation
-
+    // Prepare the graph
     for e in &edges {
         graph[e[0] as usize].push(e[1]);
         parent[e[1] as usize] = e[0];
@@ -151,12 +150,12 @@ mod test {
                 1, 2
             ],
         ];
-        sum_of_distances_in_tree(3, edges);
+        assert_eq!(vec![2, 1, 0],
+            sum_of_distances_in_tree(3, edges));
     }
 
-    // leetcode example 1
-
-    fn ex1() {
+    #[test]
+    fn lc1() {
         let edges = vec![
             vec![
                 0, 1
@@ -174,7 +173,8 @@ mod test {
                 2, 5
             ],
         ];
-        sum_of_distances_in_tree(6, edges);
+        assert_eq!(vec![8,12,6,10,10,10],
+                   sum_of_distances_in_tree(6, edges));
     }
 
     #[test]
@@ -199,7 +199,54 @@ mod test {
                 2, 6
             ],
         ];
-        sum_of_distances_in_tree(7, edges);
+
+        assert_eq!(vec![11, 10, 14, 13, 15, 18, 19],
+                   sum_of_distances_in_tree(7, edges));
+    }
+
+    #[test]
+    fn lc2() {
+        let edges = vec![
+            vec![
+                1, 0
+            ],
+        ];
+;
+        assert_eq!(vec![1,1],
+                   sum_of_distances_in_tree(2, edges));
+    }
+
+    #[test]
+    fn lc3() {
+        let edges = vec![
+            vec![
+                1, 0
+            ],
+            vec![
+                2, 0
+            ]
+        ];
+
+        assert_eq!(vec![2,3,3],
+                   sum_of_distances_in_tree(3, edges));
+    }
+
+    #[test]
+    fn lc4() {
+        let edges = vec![
+            vec![
+                1, 2
+            ],
+            vec![
+                3, 2
+            ],
+            vec![
+                3, 0
+            ]
+        ];
+
+        assert_eq!(vec![6,6,4,4],
+                   sum_of_distances_in_tree(4, edges));
     }
 }
 
