@@ -1,78 +1,98 @@
 pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
                                 -> Vec<i32> {
 
+    // Mem
+
     // The sum of distances from a node to all the nodes in the tree
     // below it.
     let mut down: Vec<i32> = [0].repeat(n as usize);
-
     // The sum of distances from a node to all the nodes in the tree
     // above it.
     let mut up: Vec<i32> = [0].repeat(n as usize);
-
     // How many nodes in the subtree for each of the nodes in the
     // tree.
     let mut hm_nodes_in_subtree: Vec<i32> = [0].repeat(n as usize);
-
     // -1 for no parent (root)
     let mut parent: Vec<i32> = [-1].repeat(n as usize);
-
     let mut graph: Vec<Vec<i32>> = vec![];
     graph.reserve(n as usize);
     for i in 0..n {
         graph.push(vec![]);
     }
-
     // Queue reused for traversals
     let mut q: std::collections::vec_deque::VecDeque::<i32>
         = std::collections::vec_deque::VecDeque::<i32>::new();
+    // Vistied cache, reused for traversals
+    let mut v: std::collections::HashSet::<i32>
+        = std::collections::HashSet::<i32>::new();
 
     // Prepare the graph
     for e in &edges {
         graph[e[0] as usize].push(e[1]);
-        parent[e[1] as usize] = e[0];
+        graph[e[1] as usize].push(e[0]);
     }
+    println!("graph {:?}", graph);
 
-    // Find the leaves.
+    // Find the parental relations and leaves.
     // Let's say 0 is always the root.
     q.push_back(0);
+    v.insert(0);
     let mut leaves: Vec<i32> = vec![];
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
-        if graph[current_node as usize].len() == 0 {
-            leaves.push(current_node);
-            continue;
+        // println!("!Current node {}", current_node);
+        if graph[current_node as usize].len() == 1 &&
+            current_node != 0 {
+                // println!("!Found a leaf");
+                leaves.push(current_node);
+                continue;
         }
         for next in &graph[current_node as usize] {
+            if v.contains(next) {
+                // println!("!Skip");
+                continue;
+            }
+
+            // println!("Adding {}", *next);
             q.push_back(*next);
+            v.insert(current_node);
+            parent[*next as usize] = current_node;
         }
     }
+    v = std::collections::HashSet::new();
     // Need the lowest nodes to be located before the highest
     // Without this, the algorithm will not work - a higher leave
     // must be processed after a lower one.
     leaves.reverse();
+    println!("parent {:?}", parent);
+    println!("leaves {:?}", leaves);
 
-    // How many nodes in subtrees
+    // How many nodes in subtrees. Move with parental relationships.
     for i in &leaves {
         hm_nodes_in_subtree[*i as usize] = 0;
         q.push_back(*i);
     }
     let mut seen_node_times: Vec<i32>
         = [0].repeat(n as usize);
-
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
+        // println!("?current node {}", current_node);
         if parent[current_node as usize] == -1 {
+            // println!("?found the root {}", parent[current_node as usize]);
             continue;
         }
         seen_node_times[current_node as usize] += 1;
-        if graph[current_node as usize].len() >
+        // every node has a connection to its parent, therefore -1
+        if graph[current_node as usize].len() - 1 >
             seen_node_times[current_node as usize] as usize {
+                // println!("?Have not seen {} enough", current_node);
             continue;
         }
         hm_nodes_in_subtree[parent[current_node as usize] as usize]
             += (hm_nodes_in_subtree[current_node as usize] + 1);
         q.push_back(parent[current_node as usize]);
     }
+    println!("how many nodes in subtrees {:?}", hm_nodes_in_subtree);
 
     // Fill {down}
     for i in &leaves {
@@ -84,26 +104,29 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
         let current_node = q.pop_front().unwrap();
         if parent[current_node as usize] == -1 ||
             seen_node_times[parent
-                            [current_node as usize] as usize] != 0 {
-            continue;
-        }
+                            [current_node as usize] as usize] != 0
+        { continue; }
         seen_node_times[parent[current_node as usize] as usize] = 1;
         for j in &graph[parent[current_node as usize] as usize] {
+            if *j == parent[parent[current_node as usize] as usize] {
+                continue;
+            }
             down[parent[current_node as usize] as usize]
                 += down[*j as usize] +
                 hm_nodes_in_subtree[*j as usize] + 1;
         }
         q.push_back(parent[current_node as usize]);
     }
-
-    // println!("dows {:?}", down);
+    println!("dows {:?}", down);
 
     // Fill {up}
     for i in &graph[0] {
         q.push_back(*i);
+        v.insert(*i);
     }
     while q.len() > 0 {
         let current_node = q.pop_front().unwrap();
+        println!("_current node {}", current_node);
         up[current_node as usize]
             =
 
@@ -121,18 +144,19 @@ pub fn sum_of_distances_in_tree(n: i32, edges: Vec<Vec<i32>>)
             n - hm_nodes_in_subtree[current_node as usize] - 1;
 
         for i in &graph[current_node as usize] {
+            if v.contains(i) || *i == parent[current_node as usize] {
+                continue;
+            }
             q.push_back(*i);
+            v.insert(*i);
         }
     }
-
-    // println!(" ups {:?}", up);
+    println!("ups {:?}", up);
 
     for (i, v) in up.iter().enumerate() {
         down[i] += v;
     }
-
-    // println!("res: {:?}", down);
-
+    println!("res: {:?}", down);
     down
 }
 
@@ -176,7 +200,7 @@ mod test {
         assert_eq!(vec![8,12,6,10,10,10],
                    sum_of_distances_in_tree(6, edges));
     }
-
+/*
     #[test]
     fn cs1() {
         let edges = vec![
@@ -248,6 +272,7 @@ mod test {
         assert_eq!(vec![6,6,4,4],
                    sum_of_distances_in_tree(4, edges));
     }
+*/
 }
 
 
