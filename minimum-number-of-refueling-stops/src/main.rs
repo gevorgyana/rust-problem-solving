@@ -23,38 +23,67 @@
  * Here is why the greedy approach does not work. See the picture.
  */
 
-fn f(index: usize, fuel: i32,
-     // cached answer for given amount of fuel,
-     c_ans: &Vec<i32>, c_fuel: &Vec<i32>,
-     // (distance from the start, amount of fuel)
-     stations: &Vec<(usize, i32)>) -> i32 {
+fn f(
 
-    if fuel < c_fuel[station] {
-        if c_ans[station] == -1 {
-            c_and[station] = i32::max_value();
-        }
+    // station id
+    i: usize,
+    // amoung of fuel available
+    j: usize,
+    // mem[i][j] = answer for i-th node with the amount of fuel that
+    // can reach the j-th node and no other node to the right from it.
+    // -1 for non-existing values.
+    mem: &mut Vec<Vec<i32>>,
+    // (distance from the start, amount of fuel) for a given station
+    data: &Vec<(usize, usize)>)
 
-        for (i, val) in stations.iter().enumerate() {
-            let fuel_cost = val.0 - stations[index];
-            if c_
-            if fuel_cost > fuel {
-                continue;
-            }
-            c_and[station] = std::cmp::min(
-                c_and[station],
-                f(c_and[station],
-                  fuel - fuel_cost,
-                  c_fuel,
-                  c_ans,
-                  stations
-            ));
+    -> i32 {
+
+    // what is the furthest station that we might reach?
+    let mut max_reach: usize = i;
+    for n in i + 1..data.len() {
+        if j >= (data[n].0 - data[i].0) {
+            max_reach += 1;
+        } else {
+            break;
         }
-    } else {
-        // also need to recalculate
+    }
+    if max_reach == i {
+        // there is no answer - return a giant value so it is never
+        // picked by any min()
+        return i32::max_value();
     }
 
+    let mut answer = i32::max_value();
+    if mem[i][max_reach] != -1 {
+        answer = mem[i][max_reach];
+    } else {
+        let mut first_missing: usize = 0;
+        while mem[i][first_missing] != -1 { first_missing += 1; }
+        if first_missing > 0 {
+            answer = mem[i][first_missing - 1];
+        }
+        for n in first_missing..max_reach + 1 {
+            answer = std::cmp::min(
+                answer,
+                // the function call should cache the values in {ans}
+                f(n,
+                  j - (data[n].0 - data[i].0) + data[i].1,
+                  mem, data)
+            );
+        }
+    }
+    if answer == i32::max_value() {
+        mem[i][j] = 0;
+        0
+    } else {
+        mem[i][j] = answer;
+        answer
+    }
 }
 
 fn main() {
+    let mut v = vec![];
+    let mut m = vec![];
+    f(0,0,&mut v, &mut m);
     println!("Hello, world!");
 }
