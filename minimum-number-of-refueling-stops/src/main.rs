@@ -21,7 +21,22 @@
  *
  * Takes O(500 * 500) memory and O(500 * 500) time.
  * Here is why the greedy approach does not work. See the picture.
+
+
+ * Optimized search:
+ * Fix cluster, each cluster takes at most N calculations. O(N^3) as
+ * there are at most O(N^2) clusters. Rough estimation.
+ * Optimized with memory. If we calculate up to some value, we
+ * calculate for every intermediate value, so cache the results. Other
+ * wise we will calculate those values more than necessary. Every
+ * answer is enumerated by two indices, each of which is 500 at most.
+ * So this is quadratic complexity thanks to caching.
+
+ * Can be optimized further by using cubic dp. If we want to cache the
+ * last calculated value.
  */
+
+static mut stop: i32 = 0;
 
 fn f(
 
@@ -29,8 +44,8 @@ fn f(
     i: usize,
     // amoung of fuel available
     j: usize,
-    // mem[i][j] = answer for i-th node with the amount of fuel that
-    // can reach the j-th node and no other node to the right from it.
+    // mem[i][j] = answer for i-th node with enough fuel
+    // to reach j-th node and no other node to the right from it.
     // -1 for non-existing values.
     mem: &mut Vec<Vec<i32>>,
     // (distance from the start, amount of fuel) for a given station
@@ -38,6 +53,15 @@ fn f(
 
     -> i32 {
 
+    unsafe {
+        if stop == 30 {
+            panic!("max num of calls");
+        } else {
+            stop += 1;
+        }
+    }
+
+    println!("station|fuel: {} {}", i, j);
     // what is the furthest station that we might reach?
     let mut max_reach: usize = i;
     for n in i + 1..data.len() {
@@ -47,43 +71,124 @@ fn f(
             break;
         }
     }
+    println!("station|max reach: {} {}", i, max_reach);
     if max_reach == i {
-        // there is no answer - return a giant value so it is never
-        // picked by any min()
-        return i32::max_value();
+        if i == data.len() - 1 {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
-    let mut answer = i32::max_value();
     if mem[i][max_reach] != -1 {
-        answer = mem[i][max_reach];
+        return mem[i][max_reach];
     } else {
-        let mut first_missing: usize = 0;
-        while mem[i][first_missing] != -1 { first_missing += 1; }
-        if first_missing > 0 {
-            answer = mem[i][first_missing - 1];
+        let mut answer: i32 = i32::max_value();
+        for n in i+1..max_reach + 1 {
+            let f_n = f(n,
+                        j - (data[n].0 - data[i].0) + data[i].1,
+                        mem, data);
+            if f_n != -1 {
+                answer = std::cmp::min(
+                    answer,
+                    f_n + 1
+                );
+            }
         }
-        for n in first_missing..max_reach + 1 {
-            answer = std::cmp::min(
-                answer,
-                // the function call should cache the values in {ans}
-                f(n,
-                  j - (data[n].0 - data[i].0) + data[i].1,
-                  mem, data)
+
+        if answer == i32::max_value() {
+            mem[i][j] = -1;
+            -1
+        } else {
+            mem[i][j] = answer;
+            answer
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn ex1() {
+        let startFuel = 1;
+
+        let mut stations = vec![];
+        let target = 1;
+        stations.push((target, 0));
+
+        let mut mem = vec![];
+        for i in 0..500 {
+            mem.push([-1].repeat(500));
+        }
+
+        println!("{:?}", stations);
+
+        if stations[0].0 > startFuel {
+            assert_eq!(-1, -1);
+        } else {
+            assert_eq!(0,
+                       f(0,
+                         startFuel - stations[0].0,
+                         &mut mem, &stations)
             );
         }
     }
-    if answer == i32::max_value() {
-        mem[i][j] = 0;
-        0
-    } else {
-        mem[i][j] = answer;
-        answer
+
+    #[test]
+    fn ex2() {
+        let startFuel = 1;
+
+        let mut stations = vec![(10, 100)];
+        let target = 100;
+        stations.push((target, 0));
+
+        let mut mem = vec![];
+        for i in 0..500 {
+            mem.push([-1].repeat(500));
+        }
+
+        println!("{:?}", stations);
+
+        if stations[0].0 > startFuel {
+            assert_eq!(-1, -1);
+        } else {
+            assert_eq!(-1,
+                       f(0,
+                         startFuel - stations[0].0,
+                         &mut mem, &stations)
+            );
+        }
+    }
+
+    #[test]
+    fn ex3() {
+        let startFuel = 10;
+
+        let mut stations = vec![(10, 60), (20, 30), (30, 30),
+                                (60, 40)
+        ];
+        let target = 100;
+        stations.push((target, 0));
+
+        let mut mem = vec![];
+        for i in 0..500 {
+            mem.push([-1].repeat(500));
+        }
+
+        println!("{:?}", stations);
+
+        if stations[0].0 > startFuel {
+            assert_eq!(-1, -1);
+        } else {
+            assert_eq!(-1,
+                       f(2,
+                         startFuel - stations[0].0,
+                         &mut mem, &stations)
+            );
+        }
     }
 }
 
 fn main() {
-    let mut v = vec![];
-    let mut m = vec![];
-    f(0,0,&mut v, &mut m);
-    println!("Hello, world!");
 }
