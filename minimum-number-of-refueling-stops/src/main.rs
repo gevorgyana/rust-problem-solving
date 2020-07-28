@@ -137,10 +137,11 @@ fuel + what we currently have {}",
             }
 
             if answer == i32::max_value() {
-                mem[i][j] = -1;
+
+                mem[i][max_reach] = -1;
                 -1
             } else {
-                mem[i][j] = answer;
+                mem[i][max_reach] = answer;
                 answer
             }
         }
@@ -179,6 +180,20 @@ mod test {
                    vec![30, 30], vec![60, 40]
             ];
         assert_eq!(2,
+                   Solution::min_refuel_stops(target, start_fuel, stations)
+        );
+    }
+
+    #[test]
+    fn lc1() {
+        let target = 999;
+        let start_fuel = 1000;
+        let mut stations : Vec<Vec<i32>>
+            = vec!
+            [vec![5,100],
+             vec![997,100],
+             vec![998,100]];
+        assert_eq!(1,
                    Solution::min_refuel_stops(target, start_fuel, stations)
         );
     }
