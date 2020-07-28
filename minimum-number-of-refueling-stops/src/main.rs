@@ -48,12 +48,32 @@ impl Solution {
             mem.push([-1].repeat(500));
         }
 
+        println!(" stations {:?}", stations);
+        println!(" target {}", target);
+        println!(" start fuel {}", start_fuel);
+
         if stations[0][0] > start_fuel {
             -1
         } else {
-            Self::f(0,
-              (start_fuel - stations[0][0]) as usize,
-              &mut mem, &stations)
+            let mut best: i32 = i32::max_value();
+            for i in 0..stations.len() {
+                if (start_fuel as i32) < stations[i][0] {
+                    break;
+                }
+                let f_i = Self::f(
+                    i,
+                    (start_fuel - stations[i][0]) as usize,
+                    &mut mem, &stations);
+                if f_i == -1 {
+                    continue;
+                }
+                best = std::cmp::min(best, f_i);
+            }
+            if best == i32::max_value() {
+                -1
+            } else {
+                best
+            }
         }
     }
 
@@ -104,8 +124,14 @@ fuel + what we currently have {}",
         println!("station|max reach: {} {}", i, max_reach);
         if max_reach == i {
             if i == data.len() - 1 {
+
+                println!("early 0");
+
                 return 0;
             } else {
+
+                println!("early -1");
+
                 return -1;
             }
         }
@@ -113,6 +139,9 @@ fuel + what we currently have {}",
         if mem[i][max_reach] != -1 {
             return mem[i][max_reach];
         } else {
+
+            println!("trying to do smth");
+
             let mut answer: i32 = i32::max_value();
             for n in i+1..max_reach + 1 {
 
@@ -193,7 +222,7 @@ mod test {
             [vec![5,100],
              vec![997,100],
              vec![998,100]];
-        assert_eq!(1,
+        assert_eq!(0,
                    Solution::min_refuel_stops(target, start_fuel, stations)
         );
     }
