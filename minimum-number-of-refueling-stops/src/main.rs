@@ -36,21 +36,25 @@
  * last calculated value.
  */
 
-pub fn min_refuel_stops(target: i32, start_fuel: i32, mut stations: Vec<Vec<i32>>) -> i32 {
+struct Solution {}
 
-    stations.push(vec![target, 0]);
+impl Solution {
+    pub fn min_refuel_stops(target: i32, start_fuel: i32, mut stations: Vec<Vec<i32>>) -> i32 {
 
-    let mut mem = vec![];
-    for i in 0..500 {
-        mem.push([-1].repeat(500));
-    }
+        stations.push(vec![target, 0]);
 
-    if stations[0][0] > start_fuel {
-        -1
-    } else {
-        f(0,
-          (start_fuel - stations[0][0]) as usize,
-          &mut mem, &stations)
+        let mut mem = vec![];
+        for i in 0..500 {
+            mem.push([-1].repeat(500));
+        }
+
+        if stations[0][0] > start_fuel {
+            -1
+        } else {
+            f(0,
+              (start_fuel - stations[0][0]) as usize,
+              &mut mem, &stations)
+        }
     }
 }
 
@@ -69,7 +73,7 @@ fn f(
 
     -> i32 {
 
-
+/*
     unsafe {
         static mut stop: i32 = 0;
         if stop == 30 {
@@ -78,7 +82,7 @@ fn f(
             stop += 1;
         }
     }
-
+*/
 
     println!("station|fuel: {} {}", i, j);
     // what is the furthest station that we might reach?
@@ -152,7 +156,7 @@ mod test {
         let start_fuel = 1;
         let mut stations : Vec<Vec<i32>> = vec![];
         assert_eq!(0,
-                   min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops(target, start_fuel, stations)
         );
     }
 
@@ -162,7 +166,7 @@ mod test {
         let start_fuel = 1;
         let mut stations : Vec<Vec<i32>> = vec![vec![10, 100]];
         assert_eq!(-1,
-                   min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops(target, start_fuel, stations)
         );
     }
 
@@ -175,7 +179,7 @@ mod test {
                    vec![30, 30], vec![60, 40]
             ];
         assert_eq!(2,
-                   min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops(target, start_fuel, stations)
         );
     }
 }
