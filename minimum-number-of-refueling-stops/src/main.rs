@@ -21,8 +21,7 @@
  *
  * Takes O(500 * 500) memory and O(500 * 500) time.
  * Here is why the greedy approach does not work. See the picture.
-
-
+ *
  * Optimized search:
  * Fix cluster, each cluster takes at most N calculations. O(N^3) as
  * there are at most O(N^2) clusters. Rough estimation.
@@ -41,39 +40,21 @@ struct Solution {}
 impl Solution {
     pub fn min_refuel_stops(target: i32, start_fuel: i32, mut stations: Vec<Vec<i32>>) -> i32 {
 
+        stations.insert(0, vec![0, start_fuel]);
         stations.push(vec![target, 0]);
-
         let mut mem = vec![];
         for i in 0..500 {
             mem.push([-1].repeat(500));
         }
+        println!("!stations {:?}", stations);
+        println!("!target {}", target);
+        println!("!start fuel {}", start_fuel);
 
-        println!(" stations {:?}", stations);
-        println!(" target {}", target);
-        println!(" start fuel {}", start_fuel);
-
-        if stations[0][0] > start_fuel {
+        let ans = Self::f(0, 0, &mut mem, &mut stations, 0);
+        if ans == -1 {
             -1
         } else {
-            let mut best: i32 = i32::max_value();
-            for i in 0..stations.len() {
-                if (start_fuel as i32) < stations[i][0] {
-                    break;
-                }
-                let f_i = Self::f(
-                    i,
-                    (start_fuel - stations[i][0]) as usize,
-                    &mut mem, &stations);
-                if f_i == -1 {
-                    continue;
-                }
-                best = std::cmp::min(best, f_i);
-            }
-            if best == i32::max_value() {
-                -1
-            } else {
-                best
-            }
+            ans - 1
         }
     }
 
@@ -87,33 +68,25 @@ impl Solution {
         // to reach j-th node and no other node to the right from it.
         // -1 for non-existing values.
         mem: &mut Vec<Vec<i32>>,
-        // (distance from the start, amount of fuel) for a given station
-        data: &Vec<Vec<i32>>)
+        // (distance from the start, amount of fuel) for a given
+        // station
+        data: &Vec<Vec<i32>>, depth: i32)
 
         -> i32 {
 
-        /*
-        unsafe {
-        static mut stop: i32 = 0;
-        if stop == 30 {
-        panic!("max num of calls");
-    } else {
-        stop += 1;
-    }
-    }
-         */
-
-        println!("station|fuel: {} {}", i, j);
+        println!("station|fuel|additional_fuel|depth: {}|{}|{}|{}", i, j, data[i][1], depth);
         // what is the furthest station that we might reach?
         let mut max_reach: usize = i;
         for n in i + 1..data.len() {
-            println!("distance to {} is {}, and we can use {} liters of
+            /*println!("distance to {} is {}, and we can use {} liters of
 fuel + what we currently have {}",
                      n,
                      data[n][0] - data[i][0],
                      data[i][1],
                      j
             );
+             */
+
             if (j as i32 + data[i][1]) as i32
                 >= (data[n][0] - data[i][0]) {
                     max_reach += 1;
@@ -121,17 +94,14 @@ fuel + what we currently have {}",
                     break;
                 }
         }
-        println!("station|max reach: {} {}", i, max_reach);
+        println!("?station|max_reach: {}|{}", i, max_reach);
+
+        // println!("station|max reach: {} {}", i, max_reach);
         if max_reach == i {
             if i == data.len() - 1 {
-
-                println!("early 0");
-
+                // println!("!the closest {}", i);
                 return 0;
             } else {
-
-                println!("early -1");
-
                 return -1;
             }
         }
@@ -139,38 +109,17 @@ fuel + what we currently have {}",
         if mem[i][max_reach] != -1 {
             return mem[i][max_reach];
         } else {
-
-            println!("trying to do smth");
-
             let mut answer: i32 = i32::max_value();
             for n in i+1..max_reach + 1 {
-
-                /*
-                println!("can use so much fuel {} to get {} kilometers
-                from here", j + data[i][1] as usize, (data[n][0] - data[i][0]));
-                println!("so the left fuel is {}",
-                j + (data[i][1] as usize) - (data[n][0] - data[i][0]) as usize);
-                 */
-
-                let f_n = Self::f(n,
-                            j + (data[i][1] as usize) - (data[n][0] - data[i][0])
-                            as usize,
-                            mem, data);
-
-                if f_n != -1 {
-                    answer = std::cmp::min(
-                        answer,
-                        f_n + 1
-                    );
-                }
+                let new_fuel = j + (data[i][1] as usize) - (data[n][0] - data[i][0]) as usize;
+                let f_n = Self::f(n, new_fuel, mem, data, depth + 1);
+                if f_n != -1 {answer = std::cmp::min(answer, f_n + 1); }
             }
 
             if answer == i32::max_value() {
-
-                mem[i][max_reach] = -1;
                 -1
             } else {
-                mem[i][max_reach] = answer;
+                // mem[i][max_reach] = answer;
                 answer
             }
         }
@@ -186,7 +135,8 @@ mod test {
         let start_fuel = 1;
         let mut stations : Vec<Vec<i32>> = vec![];
         assert_eq!(0,
-                   Solution::min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops
+                   (target, start_fuel, stations)
         );
     }
 
@@ -196,7 +146,8 @@ mod test {
         let start_fuel = 1;
         let mut stations : Vec<Vec<i32>> = vec![vec![10, 100]];
         assert_eq!(-1,
-                   Solution::min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops
+                   (target, start_fuel, stations)
         );
     }
 
@@ -209,7 +160,8 @@ mod test {
                    vec![30, 30], vec![60, 40]
             ];
         assert_eq!(2,
-                   Solution::min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops
+                   (target, start_fuel, stations)
         );
     }
 
@@ -223,7 +175,33 @@ mod test {
              vec![997,100],
              vec![998,100]];
         assert_eq!(0,
-                   Solution::min_refuel_stops(target, start_fuel, stations)
+                   Solution::min_refuel_stops
+                   (target, start_fuel, stations)
+        );
+    }
+
+    #[test]
+    fn lc2() {
+
+        let target = 1000;
+        let start_fuel = 299;
+        let mut stations : Vec<Vec<i32>>
+            = vec!
+            [
+                vec![14,123],
+                vec![145,203],
+                vec![344,26],
+                vec![357,68],
+                vec![390,35],
+                vec![478,135],
+                vec![685,108],
+                vec![823,186],
+                vec![934,217],
+                vec![959,80]];
+
+        assert_eq!(5,
+                   Solution::min_refuel_stops
+                   (target, start_fuel, stations)
         );
     }
 }
