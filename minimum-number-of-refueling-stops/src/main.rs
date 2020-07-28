@@ -51,98 +51,98 @@ impl Solution {
         if stations[0][0] > start_fuel {
             -1
         } else {
-            f(0,
+            Self::f(0,
               (start_fuel - stations[0][0]) as usize,
               &mut mem, &stations)
         }
     }
-}
 
-fn f(
+    fn f(
 
-    // station id
-    i: usize,
-    // amoung of fuel available
-    j: usize,
-    // mem[i][j] = answer for i-th node with enough fuel
-    // to reach j-th node and no other node to the right from it.
-    // -1 for non-existing values.
-    mem: &mut Vec<Vec<i32>>,
-    // (distance from the start, amount of fuel) for a given station
-    data: &Vec<Vec<i32>>)
+        // station id
+        i: usize,
+        // amoung of fuel available
+        j: usize,
+        // mem[i][j] = answer for i-th node with enough fuel
+        // to reach j-th node and no other node to the right from it.
+        // -1 for non-existing values.
+        mem: &mut Vec<Vec<i32>>,
+        // (distance from the start, amount of fuel) for a given station
+        data: &Vec<Vec<i32>>)
 
-    -> i32 {
+        -> i32 {
 
-/*
-    unsafe {
+        /*
+        unsafe {
         static mut stop: i32 = 0;
         if stop == 30 {
-            panic!("max num of calls");
-        } else {
-            stop += 1;
-        }
-    }
-*/
-
-    println!("station|fuel: {} {}", i, j);
-    // what is the furthest station that we might reach?
-    let mut max_reach: usize = i;
-    for n in i + 1..data.len() {
-        println!("distance to {} is {}, and we can use {} liters of
-fuel + what we currently have {}",
-                 n,
-                 data[n][0] - data[i][0],
-                 data[i][1],
-                 j
-        );
-        if (j as i32 + data[i][1]) as i32
-            >= (data[n][0] - data[i][0]) {
-            max_reach += 1;
-        } else {
-            break;
-        }
-    }
-    println!("station|max reach: {} {}", i, max_reach);
-    if max_reach == i {
-        if i == data.len() - 1 {
-            return 0;
-        } else {
-            return -1;
-        }
-    }
-
-    if mem[i][max_reach] != -1 {
-        return mem[i][max_reach];
+        panic!("max num of calls");
     } else {
-        let mut answer: i32 = i32::max_value();
-        for n in i+1..max_reach + 1 {
+        stop += 1;
+    }
+    }
+         */
 
-            /*
-            println!("can use so much fuel {} to get {} kilometers
-from here", j + data[i][1] as usize, (data[n][0] - data[i][0]));
-            println!("so the left fuel is {}",
-                        j + (data[i][1] as usize) - (data[n][0] - data[i][0]) as usize);
-             */
-
-            let f_n = f(n,
-                        j + (data[i][1] as usize) - (data[n][0] - data[i][0])
-                        as usize,
-                        mem, data);
-
-            if f_n != -1 {
-                answer = std::cmp::min(
-                    answer,
-                    f_n + 1
-                );
+        println!("station|fuel: {} {}", i, j);
+        // what is the furthest station that we might reach?
+        let mut max_reach: usize = i;
+        for n in i + 1..data.len() {
+            println!("distance to {} is {}, and we can use {} liters of
+fuel + what we currently have {}",
+                     n,
+                     data[n][0] - data[i][0],
+                     data[i][1],
+                     j
+            );
+            if (j as i32 + data[i][1]) as i32
+                >= (data[n][0] - data[i][0]) {
+                    max_reach += 1;
+                } else {
+                    break;
+                }
+        }
+        println!("station|max reach: {} {}", i, max_reach);
+        if max_reach == i {
+            if i == data.len() - 1 {
+                return 0;
+            } else {
+                return -1;
             }
         }
 
-        if answer == i32::max_value() {
-            mem[i][j] = -1;
-            -1
+        if mem[i][max_reach] != -1 {
+            return mem[i][max_reach];
         } else {
-            mem[i][j] = answer;
-            answer
+            let mut answer: i32 = i32::max_value();
+            for n in i+1..max_reach + 1 {
+
+                /*
+                println!("can use so much fuel {} to get {} kilometers
+                from here", j + data[i][1] as usize, (data[n][0] - data[i][0]));
+                println!("so the left fuel is {}",
+                j + (data[i][1] as usize) - (data[n][0] - data[i][0]) as usize);
+                 */
+
+                let f_n = Self::f(n,
+                            j + (data[i][1] as usize) - (data[n][0] - data[i][0])
+                            as usize,
+                            mem, data);
+
+                if f_n != -1 {
+                    answer = std::cmp::min(
+                        answer,
+                        f_n + 1
+                    );
+                }
+            }
+
+            if answer == i32::max_value() {
+                mem[i][j] = -1;
+                -1
+            } else {
+                mem[i][j] = answer;
+                answer
+            }
         }
     }
 }
