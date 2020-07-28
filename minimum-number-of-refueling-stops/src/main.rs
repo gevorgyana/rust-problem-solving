@@ -36,7 +36,23 @@
  * last calculated value.
  */
 
-static mut stop: i32 = 0;
+pub fn min_refuel_stops(target: i32, start_fuel: i32, mut stations: Vec<Vec<i32>>) -> i32 {
+
+    stations.push(vec![target, 0]);
+
+    let mut mem = vec![];
+    for i in 0..500 {
+        mem.push([-1].repeat(500));
+    }
+
+    if stations[0][0] > start_fuel {
+        -1
+    } else {
+        f(0,
+          (start_fuel - stations[0][0]) as usize,
+          &mut mem, &stations)
+    }
+}
 
 fn f(
 
@@ -49,29 +65,32 @@ fn f(
     // -1 for non-existing values.
     mem: &mut Vec<Vec<i32>>,
     // (distance from the start, amount of fuel) for a given station
-    data: &Vec<(usize, usize)>)
+    data: &Vec<Vec<i32>>)
 
     -> i32 {
 
+    /*
     unsafe {
+        static mut stop: i32 = 0;
         if stop == 30 {
             panic!("max num of calls");
         } else {
             stop += 1;
         }
     }
+     */
 
-    println!("station|fuel: {} {}", i, j);
+    // println!("station|fuel: {} {}", i, j);
     // what is the furthest station that we might reach?
     let mut max_reach: usize = i;
     for n in i + 1..data.len() {
-        if j >= (data[n].0 - data[i].0) {
+        if j as i32 >= (data[n][0] - data[i][0]) {
             max_reach += 1;
         } else {
             break;
         }
     }
-    println!("station|max reach: {} {}", i, max_reach);
+    // println!("station|max reach: {} {}", i, max_reach);
     if max_reach == i {
         if i == data.len() - 1 {
             return 0;
@@ -86,7 +105,7 @@ fn f(
         let mut answer: i32 = i32::max_value();
         for n in i+1..max_reach + 1 {
             let f_n = f(n,
-                        j - (data[n].0 - data[i].0) + data[i].1,
+                        j - (data[n][0] - data[i][0]) as usize + data[i][1] as usize,
                         mem, data);
             if f_n != -1 {
                 answer = std::cmp::min(
@@ -113,9 +132,9 @@ mod test {
     fn ex1() {
         let startFuel = 1;
 
-        let mut stations = vec![];
+        let mut stations : Vec<Vec<i32>> = vec![];
         let target = 1;
-        stations.push((target, 0));
+        stations.push(vec![target, 0]);
 
         let mut mem = vec![];
         for i in 0..500 {
@@ -124,12 +143,12 @@ mod test {
 
         println!("{:?}", stations);
 
-        if stations[0].0 > startFuel {
+        if stations[0][0] > startFuel {
             assert_eq!(-1, -1);
         } else {
             assert_eq!(0,
                        f(0,
-                         startFuel - stations[0].0,
+                         (startFuel - stations[0][0]) as usize,
                          &mut mem, &stations)
             );
         }
@@ -139,9 +158,9 @@ mod test {
     fn ex2() {
         let startFuel = 1;
 
-        let mut stations = vec![(10, 100)];
+        let mut stations : Vec<Vec<i32>> = vec![vec![10, 100]];
         let target = 100;
-        stations.push((target, 0));
+        stations.push(vec![target, 0]);
 
         let mut mem = vec![];
         for i in 0..500 {
@@ -150,12 +169,12 @@ mod test {
 
         println!("{:?}", stations);
 
-        if stations[0].0 > startFuel {
+        if stations[0][0] > startFuel {
             assert_eq!(-1, -1);
         } else {
             assert_eq!(-1,
                        f(0,
-                         startFuel - stations[0].0,
+                         (startFuel - stations[0][0]) as usize,
                          &mut mem, &stations)
             );
         }
@@ -165,11 +184,12 @@ mod test {
     fn ex3() {
         let startFuel = 10;
 
-        let mut stations = vec![(10, 60), (20, 30), (30, 30),
-                                (60, 40)
+        let mut stations : Vec<Vec<i32>>
+            = vec![vec![10, 60], vec![20, 30],
+                   vec![30, 30], vec![60, 40]
         ];
         let target = 100;
-        stations.push((target, 0));
+        stations.push(vec![target, 0]);
 
         let mut mem = vec![];
         for i in 0..500 {
@@ -178,12 +198,12 @@ mod test {
 
         println!("{:?}", stations);
 
-        if stations[0].0 > startFuel {
+        if stations[0][0] > startFuel {
             assert_eq!(-1, -1);
         } else {
             assert_eq!(-1,
                        f(2,
-                         startFuel - stations[0].0,
+                         (startFuel - stations[0][0]) as usize,
                          &mut mem, &stations)
             );
         }
