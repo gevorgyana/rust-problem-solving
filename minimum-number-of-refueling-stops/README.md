@@ -11,3 +11,6 @@ memoization technique would give the above time and space complexity.
 The naive solution would suggest that we choose the best option from
 a set of 2^M * M if we wanted to construct the solutions and then check
 their validity.
+
+I managed to think of the previous solution, but it would not work.
+Checked the solution, so it makes no sense to solve it here anymore...
