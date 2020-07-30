@@ -20,27 +20,27 @@ impl Solution {
             for (j, val2) in s.chars().enumerate() {
 
                 if val2 == val {
-                    println!("eq s:{} == t:{}", j, i);
-                    println!("from {} to {}", j, s.len() - 1);
+                    // println!("eq s:{} == t:{}", j, i);
+                    // println!("from {} to {}", j, s.len() - 1);
                     let mut mul = 1;
                     if i > 0 {
                         mul *= dp[i - 1][j];
                     }
-                    println!("adding this {}", mul);
+                    // println!("adding this {}", mul);
                     for k in j..s.len() {
                         dp[i][k] += mul;
                     }
                 }
             }
         }
-
         println!("{:?}", dp);
-
-        1
+        dp[t.len() - 1][s.len() - 1]
     }
 }
 
 fn main() {
-    let f: i32 = Solution::
-    num_distinct(String::from("abcdac"), String::from("ac"));
+    assert_eq!(Solution::num_distinct(
+        String::from("abcdac"),
+        String::from("ac")),
+               3);
 }
