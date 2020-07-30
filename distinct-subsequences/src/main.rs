@@ -14,27 +14,56 @@ impl Solution {
         for i in 0..t.len() {
             dp.push([0].repeat(s.len()));
         }
+        let mut ans: i32 = 0;
 
         // first row
         for (i, val) in t.chars().enumerate() {
             for (j, val2) in s.chars().enumerate() {
 
+                // small optimization
+                if j < i { continue; }
+
                 if val2 == val {
-                    // println!("eq s:{} == t:{}", j, i);
-                    // println!("from {} to {}", j, s.len() - 1);
+                    println!("found {}", val);
+
                     let mut mul = 1;
-                    if i > 0 {
+                    if i > 0 && dp[i - 1][j] > 0 {
+                        if i == t.len() - 1 {
+                            ans += dp[i - 1][j];
+                            continue;
+                        }
                         mul *= dp[i - 1][j];
                     }
-                    // println!("adding this {}", mul);
-                    for k in j..s.len() {
+                    for k in j+1..s.len() {
                         dp[i][k] += mul;
                     }
                 }
             }
         }
         println!("{:?}", dp);
-        dp[t.len() - 1][s.len() - 1]
+        ans
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn ex1() {
+
+        assert_eq!(Solution::num_distinct(
+            String::from("rabbbit"),
+            String::from("rabbit")),
+                   3);
+
+        assert_eq!(Solution::num_distinct(
+            String::from("rabbbit"),
+            String::from("rabit")),
+                   3);
+        assert_eq!(Solution::num_distinct(
+            String::from("bbb"),
+            String::from("bb")),
+                   3);
     }
 }
 
