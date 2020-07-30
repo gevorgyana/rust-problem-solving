@@ -1,5 +1,5 @@
 [package]
-name = "super-egg-drop"
+name = "distinct-subsequences"
 version = "0.1.0"
 authors = ["Artyom Gevorgyan <artemhevorhian@gmail.com>"]
 edition = "2018"
