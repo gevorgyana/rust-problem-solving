@@ -7,8 +7,8 @@ impl Solution {
      *     +   c
      */
     pub fn num_distinct(s: String, t: String) -> i32 {
-        //println!("S: {}", s);
-        //println!("T: {}", t);
+        println!("S: {}", s);
+        println!("T: {}", t);
 
         let mut dp: Vec<Vec<i32>> = vec![];
         for _i in 0..t.len() - 1 {
@@ -31,28 +31,30 @@ impl Solution {
         }
 
         for (i, val) in t.chars().enumerate() {
+            if i == t.len() - 1 { continue; }
             for (j, val2) in s.chars().enumerate() {
                 if j < i {continue;}
                 if val2 == val {
-                    //println!("t: {}, s: {}", i, j);
-                    let mut mul = 1;
-                    if i > 0 && dp[i - 1][j] > 0 {
-                        mul *= dp[i - 1][j];
+                    // println!("t: {}, s: {}", i, j);
+                    let mul: i32;
+                    if i > 0 {
+                        mul = dp[i - 1][j];
+                    } else {
+                        mul = 1;
                     }
-
-                    // update the answer or the {dp}
-                    if i == t.len() - 1  && dp[i - 1][j] > 0 {
-                        //println!("adding {}", mul);
-                        ans += dp[i - 1][j];
-                    } else if i < t.len() - 1 {
-                        for k in j+1..s.len() {
-                            dp[i][k] += mul;
-                        }
+                    for k in j+1..s.len() {
+                        dp[i][k] += mul;
                     }
                 }
             }
         }
-        //println!("{:?}", dp);
+        println!("{:?}", dp);
+        for (i, val) in dp[t.len() - 2].iter().enumerate() {
+            if s.chars().nth(i) == t.chars().last() {
+                println!("withdraw {} when at {}", val, i);
+                ans += val;
+            }
+        }
         ans
     }
 }
@@ -100,6 +102,11 @@ mod test {
             String::from("aaa"),
             String::from("a")),
                    3);
+
+        assert_eq!(Solution::num_distinct(
+            String::from("aaabbaaaabbbaaaaba"),
+            String::from("abba")),
+                   249);
     }
 }
 
