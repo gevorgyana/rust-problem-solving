@@ -141,3 +141,5 @@ the lowest - I think it will be the optimal way to divide the subtasks.
 Try every one of them - they will refer to already calculated values of
 dp[i][j], where i is from 0 to N - 1 and j is K or K - 1.
 Bottom-up or vice versa - does not matter.
+
+It also makes sense to only choose from the first N / 2 floors.
