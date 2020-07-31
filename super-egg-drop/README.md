@@ -65,3 +65,79 @@ K1 K2 ... min(K, N)
 
 Required memory and time complexity: O(N * M). But the constant is at
 least 1 / 2, because we do need half the them (the triangle).
+
+Updates.
+
+1. The solution should mimic binary serach in best case. Not ternary or
+any other base search.
+
+2. Binary search should attempt to divide the array in the middle.
+
+3. 2 is not always optimial, as there can be different amount of K - steps
+that we are allowed to use for optimizing the search process. Other words,
+we may not be able to fully run binary search on some of the cases and
+therefore it might not be optimial to mimic binary serach.
+
+4. What to do then? Well, try somewhere around binary search and move
+downwards until you reach the point where f(up) is most similar to
+f(down). Not size(up) and size(down), which would be the case if we had
+no parameter K and were trying to conduct binary search by excluding half
+of the input from search.
+
+Here is another update. We can use ternary search to search for the
+point where the difference between the upper problem and the lower
+problem is minimal. We just need to make sure that there is a unimodal
+function, and I think it is. Why? Ternary search in the worst case gives
+us N - 1 / 3 * N size of the new problem. But it works on unimodal
+functions and it has to imply that there can be no equal elements to one
+side of minimum or maximum. Indeed I think it works. At least because we
+have the increase of the upper problem if we go down from top, and
+decrease of the lower problem.
+
+6 f(5; k) | f(0; k - 1)
+5 f(4; k) | f(1; k - 1)
+4 f(3; k) | f(2; k - 1)
+3 f(2; k) | f(3; k - 1)
+2 f(1; k) | f(4; k - 1)
+1 f(0; k) | f(5; k - 1)
+
+clearly we can see the increase and decrease. So what if we form the
+sequence of differences between the upper and lower problems - the answers
+on them actually - like this:
+
+f(5; k) - f(0; k - 1) = f(5; k)
+f(4; k) - f(1; k - 1)
+f(3; k) - f(2; k - 1)
+f(2; k) - f(3; k - 1)
+f(1; k) - f(4; k - 1)
+f(0; k) - f(5; k - 1) = -f(5; k - 1)
+
+here it is {lower - upper}, don't get it confused!
+so what we can see is the edges are polar to each other. So there won't be
+any chance to use ternary search - but as the function should be
+monotonic, we can use binary search here! Only need to prove the property
+of a monotonic function.
+
+If it is one, then we can say we have the following search tree:
+
+  log2(N) - height thanks to smart selection
+   +
++ ... log2(N) - width thanks to simulating binary search - we will do
+                at MOST log2(N) steps to complete the search process
+   +
+
+So we would have a bounding box for this tree whose area is
+log2(N) * log2(N), which is great!
+
+The other approach is using dynamic programming to optimize the search.
+Like this.
+
+This is guaranteed to work. In the previous case I need to prove that
+that function is monotonic to claim that it works.
+Take the same example with 6 floors. The same function - difference
+between the solutions to upper and lower problems - take the one that is
+the lowest - I think it will be the optimal way to divide the subtasks.
+
+Try every one of them - they will refer to already calculated values of
+dp[i][j], where i is from 0 to N - 1 and j is K or K - 1.
+Bottom-up or vice versa - does not matter.
