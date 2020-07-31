@@ -10,9 +10,8 @@ impl Solution {
             return n;
         }
 
-        // todo log instead
         if k > n {
-            panic!("does not happen");
+            (n as f32).log2().ceil() as i32;
         }
 
         if n % 2 == 0 {
@@ -42,4 +41,18 @@ fn main() {
         4
     );
     println!("---");
+        assert_eq!(
+        Solution::super_egg_drop(2, 1),
+        1
+        );
+    println!("---");
+        assert_eq!(
+        Solution::super_egg_drop(3, 2),
+        2
+        );
+    println!("---");
+        assert_eq!(
+        Solution::super_egg_drop(4, 3),
+        2
+    );
 }
