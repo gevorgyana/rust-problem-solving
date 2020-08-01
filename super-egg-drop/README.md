@@ -384,3 +384,18 @@ be O(log2(N) * log2(N))
 
 The alternative is to use dynamic programming to calculate the answer in
 O(N * N) time and using the same amount of space.
+---
+Still not clear why the binary search procesdure will succeed in finding
+0? Will there always be a floor such that we can drop the egg from it and
+the costs of the subproblems will be equal? Yes, suppose not. Suppose
+there are two subproblems that have different size of subtasks. Say they
+differ in 1. Shift the floor down until the cost of the lower subproblem
+decreases by 1. By that time, the cost of the upper subproblem may have
+increased by 1. Nooooooo. It is not always the case, I think so.....
+This will probably not work....
+
+Here is what will work. We need the floor that can get us closest to zero.
+We can say that the closes number to 0 is either 0 itself, or the smallest
+positive, or the greatest negative number. We can find the smallest
+positive and greatest negative numbers and then use O(1) logic to
+determine the point of minimum.
