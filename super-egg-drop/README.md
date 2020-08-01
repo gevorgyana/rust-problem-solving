@@ -143,3 +143,244 @@ dp[i][j], where i is from 0 to N - 1 and j is K or K - 1.
 Bottom-up or vice versa - does not matter.
 
 It also makes sense to only choose from the first N / 2 floors.
+
+f(5; k) - f(0; k - 1)
+f(4; k) - f(1; k - 1)
+
+f(5; k) >= f(4; k)
+f(0; k - 1) <= f(1; k - 1)
+that is why the function is monotonic.
+Following this logic, the index is always in the middle? But it is not
+always the case. We should check the minimal value on a unimodal function.
+I am not sure if the function is unimodal.... If it is, then run ternary
+search to find the minimal value on the range [0; N / 2], or
+[0; N / 2 + 1] for even number
+
+Unimodal?
+f(N; k) = f(N - 1; k) when?
+not when k = 1,
+....
+It may be flat at all.... But it should be unimodal.
+
+One more attempt to prove the property of a monotonic function for
+d(f(up), f(down))
+     breaks      | does not break
+3 - f(2; k - 1)  | f(0; k)
+2 - f(1; k - 1)  | f(1; k)
+1 - f(0; k - 1)  | f(2; k)
+d{i} = f(breaks{i}) - f(does not break{i})
+k = 1
+d1 > d2 > d3
+3 - f(2; 0)  | f(0; k)
+2 - f(1; 0)  | f(1; k)
+1 - f(0; 0)  | f(2; k)
+    these
+    cancel
+    out
+
+k = 2
+f(2; 1) - f(0; 2) = 2 - 0 = 2
+>
+f(1; 1) - f(1; 2) = 1 - 1 = 0 -- take this one
+>
+f(0; 1) - f(2; 2) = 0 - 2 = -2
+
+So the numbers are [2, 0] - monotonic!
+Proving by induction.
+N is fixed.
+with k = 3 will be the same, does not make sense to check it.
+only makes sense to prove for k from 0 to log2(N).
+for k = 0 already probved.
+
+Say we proved for all Ni < N, and for each K in there. Now
+we are proving for N and K.
+
+f(N; K) = d(f(N - 1; K - 1), f(0, K))     = d1
+f(N - 1; K) = d(f(N - 2; K - 1), f(1, K)) = d2
+compare these...
+by induction, f(N - 1; K - 1) > f(N - 2; K - 1).
+Then f(0; K) < f(1; N). Which means that d1 > d2.
+And so on....
+Util we reach the middle point.
+
+Update. The minimum is somewhere at index {i} with i from [N / 2; N].
+
+       .                           .
+
+                 .                .
+		    .         .
+		          .
+			  minimum
+			  this is a unimodal function
+
+Usually, when there is enough K, we expect it to be in the middle, but it
+can be anywhere, the only thing we can definitely say is that it makes
+sense to expect it to be somewhere in the upper half of the array.
+  N  K
+f(2; 1) = 2
+f(1; 1) = 1
+----------------------------------------------------------------------
+Proving that it is not monotonic, but that the function is sutable for
+ternary search.
+
+This table is right now! to the left are the floors
+    breaks     |does not break
+1 - f(2; k - 1)|f(0; k)
+2 - f(1; k - 1)|f(1; k)
+3 - f(0; k - 1)|f(2; k)
+
+k = 1;
+For k = 1, each f(N; K) = N.
+So f(N) > f(1).
+                                      or can also be explained by the rule
+				      f(N; 1) = N
+k = 2;                                   cannot branch here
+f(2; 1) - f(0; 2) = f(2; 1) = 2. (f(2; 1) = 1+ f(1; 1) = 2)
+f(1; 1) - f(1; 2) = 0
+f(0; 1) - f(2; 2) = 0 - 2 = -2;
+Unimodal.
+
+Take 4 floors
+    breaks     |does not break
+1 - f(3; k - 1)|f(0; k)
+2 - f(2; k - 1)|f(1; k)
+3 - f(1; k - 1)|f(2; k)
+4 - f(0; k - 1)|f(3; k)
+
+k = 1
+Done.
+
+k = 2
+f(3; 1) - f(0; 2) = f(3; 1) = 3
+f(2; 1) - f(1; 2) = 2 - 1 = 1
+f(1; 1) - f(2; 2) = 1 - 2 = -1
+f(0; 1) - f(3; 2) = 0 - 2 = -2
+Still unimodal
+
+k = 3
+f(3; 2) - f(0; 3) = 2 - 0 = 2
+f(2; 2) - f(1; 3) = 2 - 1 = 1
+f(1; 2) - f(2; 3) = 1 - 2 = -1
+f(0; 2) - f(3; 3) = 0 - 2 = -2
+
+Now that we have a little more K, we can do the full search and we have
+a perfect unimodal funciton. The same is for k = 4 and greater.
+
+N = 5.
+Take 5 floors
+    breaks     |does not break
+1 - f(4; k - 1)|f(0; k)
+2 - f(3; k - 1)|f(1; k)
+3 - f(2; k - 1)|f(2; k)
+4 - f(1; k - 1)|f(3; k)
+5 - f(0; k - 1)|f(4; k)
+
+k = 1
+Done.
+
+k = 2
+f(4; 1) - f(0; 2) = 4 - 0 = 4
+f(3; 1) - f(1; 2) = 3 - 1 = 2
+f(2; 1) - f(2; 2) = 2 - 2 = 0
+f(1; 1) - f(3; 2) = 1 - 2 = -1
+f(0; 1) - f(4; 2) = 0 - 3 = -3
+
+k = 3
+f(4; 2) - f(0; 3) = 3 - 0 = 3
+f(3; 2) - f(1; 3) = 2 - 1 = 1
+f(2; 2) - f(2; 3) = 2 - 2 = 0
+f(1; 2) - f(3; 3) = 1 - 2 = -1
+f(0; 2) - f(4; 3) = 0 - 3 = -3
+
+k = 4
+f(4; 3) - f(0; 4) = 3 - 0 = 3
+f(3; 3) - f(1; 4) = 2 - 1 = 1
+f(2; 3) - f(2; 4) = 2 - 2 = 0
+f(1; 3) - f(3; 4) = 1 - 2 = -1
+f(0; 3) - f(4; 4) = 0 - 3 = -3
+
+So it is unimodal when K is big enough. And still unimodal when there is
+not enough K. It is perfectly distributed when K is enough.
+
+Let's try out 9.
+N = 9.
+Take 9 floors
+    breaks     |does not break
+1 - f(8; k - 1)|f(0; k)
+2 - f(7; k - 1)|f(1; k)
+3 - f(6; k - 1)|f(2; k)
+4 - f(5; k - 1)|f(3; k)
+5 - f(4; k - 1)|f(4; k)
+6 - f(3; k - 1)|f(5; k)
+7 - f(2; k - 1)|f(6; k)
+8 - f(1; k - 1)|f(7; k)
+9 - f(0; k - 1)|f(8; k)
+
+k = 2
+f(8; 1) - f(0; 2) = 8 - 0 = 8
+f(7; 1) - f(1; 2) = 7 - 1 = 6
+f(6; 1) - f(2; 2) = 6 - 2 = 4
+f(5; 1) - f(3; 2) = 5 - 2 = 3
+f(4; 1) - f(4; 2) = 4 - 3 = 1
+f(3; 1) - f(5; 2) = 3 - 3 = 0 -- works indeed - we need to select minimum
+                                 of the function
+f(2; 1) - f(6; 2) = 2 - 3 = -1
+f(1; 1) - f(7; 2) = 1 - 4 = -3
+f(0; 1) - f(8; 2) = 0 - 4 = -4
+
+Unimodal.
+
+First we calculate the difficult part, then reuse it in the next step,
+and we finish calculating the new difficult part when we hit K > N, where
+it makes sense to just take the binary logarithm.
+
+k = 3 ( reusing the calculated values from k = 2)
+f(8; 2) - f(0; 3) = 4 - 0 = 4
+f(7; 2) - f(1; 3) = 4 - 1 = 3
+f(6; 2) - f(2; 3) = 3 - 2 = 1
+f(5; 2) - f(3; 3) = 3 - 2 = 1 ---- not unimodal! two equal elements
+                                   to one side
+f(4; 2) - f(4; 3) = 3 - 3 = 0
+f(3; 2) - f(5; 3) =
+f(2; 2) - f(6; 3) =
+f(1; 2) - f(7; 3) =
+f(0; 2) - f(8; 3) =
+
+Alright, not unimodal, but at least sorted so we can chase the 0. Look for
+0 in the array. Do binary search on it.
+
+Proving that it is sorted.
+Say K = 1.
+Proved, as this is literally 1 < 2 < .. < N
+
+K = 2
+We reuse part of the already calculated values in this fashion.
+f(N; 1) - f(0; 2) = N - f(0; 2) = (N) - 0 = N
+f(N - 1; 1) - f(1; 2) = (N - 1) - 1 = N - 2
+f(N - 2; 1) - f(2; 2) = (N - 2) - 2 = N - 4
+..
+in case of odd we hit N / 2 + 1 and then calculate for it these:
+f(N / 2; 1) - f(N / 2; 2) = (N / 2) - f(N / 2; 2)
+f(N; 0) - f(N - 1; 2)
+
+The idea: the left part of the expressions is calculated at first step,
+and the claim hold true. Then at the second step we can say that the left
+parts of the expression hold the order (equality is allowed). Then we can
+say that f(N - 1; K) <= f(N; K), which hold true. Then it follows that
+we have the following scheme:
+
+L1 - R1
+L2 - R2
+...
+LN - RN
+
+where L1 <= L2 <= .. <= LN and R1 <= R2 <= .. <= RN.
+Which proves that the function is monotonic!
+Done
+
+--------------------------------------------------------------
+So we can use binary search. Therefore the time complexity is going to
+be O(log2(N) * log2(N))
+
+The alternative is to use dynamic programming to calculate the answer in
+O(N * N) time and using the same amount of space.
