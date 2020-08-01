@@ -38,7 +38,7 @@ impl Solution {
         println!("{:?}", dp);
 
         for i in 2..=n as usize {
-            if i > 2 {break;}
+            if i > 9 {break;}
             // todo optimize till i or log2(i)
             for k in 2..=n as usize {
                 println!("{} floors and {} eggs", i, k);
@@ -57,13 +57,12 @@ impl Solution {
                     let survives: i32 = dp[i - j][k];
                     println!("survives with cost {}", survives);
                     println!("cost from dp[{}][{}]", i - j, k);
-
                     let worst_cost: i32 = std::cmp::max(cracks, survives);
                     if worst_cost < ans {
                         ans = worst_cost;
                     }
                 }
-                dp[i][k] = ans;
+                dp[i][k] = ans + 1;
             }
         }
         println!("{:?}", dp);
