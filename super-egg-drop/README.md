@@ -383,7 +383,7 @@ So we can use binary search. Therefore the time complexity is going to
 be O(log2(N) * log2(N))
 
 The alternative is to use dynamic programming to calculate the answer in
-O(N * N) time and using the same amount of space.
+O(N * N * N) time and using quadratic amount of space.
 ---
 Still not clear why the binary search procesdure will succeed in finding
 0? Will there always be a floor such that we can drop the egg from it and
