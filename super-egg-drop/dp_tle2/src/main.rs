@@ -7,7 +7,6 @@ impl Solution {
         // we have 1 floor as problem size, we still need to check it.
         let log2_i: i32 = ((n + 1) as f32).log2().ceil() as i32;
         if k >= log2_i {
-
             return log2_i;
         }
 
@@ -33,17 +32,27 @@ impl Solution {
         // println!("{:?}", dp);
 
         for i in 2..=n as usize {
-            // let l : i32 = ((i + 1) as f32).log2().ceil() as i32;
-            // println!("!log {} is {}", i, l);
-            // the following loop can be optimizied - we only need to
+            // println!("i : {}", i);
+            // the following loop is optimizied - we only need to
             // calculate the best answer till we have enough {k} to
-            // perform full binary search. But that does not change the
-            // complexity, as we still need to fill O(N) values.
+            // perform full binary search. Than changes the complexity
+            // of inner loop from O(N) to O(log2(N)). Therefore the
+            // complexity is O(N * N * log2(N)).
             for k in 2..=n as usize {
                 // println!("{} floors and {} eggs", i, k);
+                let log2_i : usize = ((i + 1) as f32).log2().ceil()
+                    as usize;
+                // println!("i {} and log {}", i, log2_i);
+                if k > log2_i {
+                    // println!("reusing the solution {}", dp[i][log2_i]);
+                    dp[i][k] = dp[i][log2_i];
+                    continue;
+                }
+
                 let mut ans: i32 = i32::max_value();
                 // A small optimization - it always makes sense to start
                 // from the first floor and stop in the middle.
+
                 for j in 1..=i as usize {
                     // println!("dropping from floor: {}", j);
                     // The left part is already calculated as it involves
@@ -63,7 +72,7 @@ impl Solution {
                 dp[i][k] = ans + 1;
             }
         }
-        println!("{:?}", dp);
+        // println!("{:?}", dp);
         dp[n as usize][k as usize]
     }
 }
@@ -89,8 +98,16 @@ mod test {
 }
 
 fn main() {
+/*
     assert_eq!(
         Solution::super_egg_drop(2, 9),
         4
     );
+*/
+
+    assert_eq!(
+        Solution::super_egg_drop(4, 2000),
+        4
+    );
+
 }
