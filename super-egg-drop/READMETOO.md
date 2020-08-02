@@ -29,3 +29,14 @@ Like this:
 So that forms a triangle, but anyway the complexity is quadratic
 logarithm. But if we cache the results, we can reduce time complexity to
 O(log2(N)).
+
+Update:
+
+Use this logarithmic search in the dp solution and also in the binary
+search solution.
+Expected time complexity of dp (bottom-up): N * min(log2(N), M) * log2(N)
+and all of the answers will be calculated, which will take
+O(N * min(log2(N), M)) memory.
+
+Expceted time complexity of bin. search with dp is quadratic log2(N),
+with memoization: O(log2(N)).
