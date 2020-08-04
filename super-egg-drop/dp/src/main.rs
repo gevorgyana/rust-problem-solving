@@ -40,11 +40,11 @@ impl Solution {
             dp[1][i as usize] = 1;
         }
 
-        println!("{:?}", dp);
+        // println!("{:?}", dp);
 
         for i in 2..=n as usize {
 
-            println!("calculating for i = {}", i);
+            // println!("calculating for i = {}", i);
 
             // Current complexity: O(N * log2(N) * log2(N)), which is
             // almost as good as the version without dp.
@@ -62,7 +62,7 @@ impl Solution {
             // calculate the answer for a given amout of floors and eggs.
             for k in 2..=k_bound as usize {
 
-                println!("calculating for k = {}", k);
+                // println!("calculating for k = {}", k);
 
                 // Further optimization! May actually remove this... It
                 // does not help with complexity.
@@ -80,21 +80,23 @@ impl Solution {
                     = &fake_container_all_floors[0..i];
                 let mut offset: usize = 0;
 
+                /*
                 println!("started binary search with slice {:?}",
                          slice
                 );
+                 */
 
                 // Finds the index that is closest to equalising the
                 // costs of solving two subtasks. In other words, find
                 // such {i} that cost(upper(i), lower(i)) is closest to 0
                 while slice.len() > 0 {
                     if slice.len() == 1 {
-                        println!("this index won {}", offset);
+                        // println!("this index won {}", offset);
                         answer = fake_container_all_floors[offset];
                         break;
                     } else if slice.len() == 2 {
 
-                        println!("trapped with 2 elements {:?}", slice);
+                        // println!("trapped with 2 elements {:?}", slice);
 
                         let current_floor_left
                             = fake_container_all_floors
@@ -132,7 +134,7 @@ impl Solution {
                                 = fake_container_all_floors[offset + 1];
                         }
 
-                        println!("this floor won {}", answer);
+                        // println!("this floor won {}", answer);
                         break;
                     }
                     else {
@@ -149,35 +151,43 @@ impl Solution {
 
                         let current_floor = fake_container_all_floors
                             [middle_element + offset];
+                        /*
                         println!("dropping from current floor : {}",
                                  current_floor
                         );
+                         */
 
                         let cracks: i32 = dp[current_floor - 1][k - 1];
+                        /*
                         println!("cracks with cost {}", cracks);
                         println!("cost from dp[{}][{}]",
                                  current_floor - 1, k - 1);
+                         */
                         let survives: i32 = dp[i - current_floor][k];
+                        /*
                         println!("survives with cost {}", survives);
                         println!("cost from dp[{}][{}]",
                                  i - current_floor, k);
+                         */
 
                         // These function values are sorted in decreasing
                         // order for this sequence of floors: 1, 2, .., i.
                         let discriminant = cracks - survives;
                         if discriminant > 0 {
                             slice = &slice[0..=middle_element];
-                            println!("slice after: {:?}", slice);
+                            // println!("slice after: {:?}", slice);
                         } else if discriminant < 0 {
                             slice = &slice[middle_element..slice.len()];
                             offset += middle_element;
-                            println!("offset is {}", offset);
-                            println!("slice after: {:?}", slice);
+                            // println!("offset is {}", offset);
+                            // println!("slice after: {:?}", slice);
                         } else {
+                            /*
                             println!("this floor won {}",
                                      fake_container_all_floors
                                      [middle_element + offset]
                                      );
+                             */
                             answer = fake_container_all_floors
                                 [middle_element + offset];
                             break;
@@ -186,18 +196,20 @@ impl Solution {
                 }
 
                 let winner_floor = answer;
-                println!("final check: this floor won {}", winner_floor);
+                // println!("final check: this floor won {}", winner_floor);
                 let cracks: i32 = dp[winner_floor - 1][k - 1];
                 let survives: i32 = dp[i - winner_floor][k];
-                println!("final check: cracks with cost {}", cracks);
-                println!("final check: survives with cost {}", survives);
+                // println!("final check: cracks with cost {}", cracks);
+                // println!("final check: survives with cost {}", survives);
 
+                /*
                 println!("setting dp[i][k] = {}",
                          std::cmp::max(cracks, survives) as i32 + 1);
+                 */
                 dp[i][k] = std::cmp::max(cracks, survives) as i32 + 1;
             }
         }
-        println!("{:?}", dp);
+        // println!("{:?}", dp);
         dp[n as usize][k as usize]
     }
 }
@@ -220,25 +232,30 @@ mod test {
             2
         );
     }
+
+    #[test]
+    fn lc3() {
+        assert_eq!(
+            Solution::super_egg_drop(2, 9),
+            4
+        );
+    }
+
+    #[test]
+    fn lc4() {
+        assert_eq!(
+            Solution::super_egg_drop(4, 2000),
+            16
+        );
+    }
+
+    #[test]
+    fn lc5() {
+        assert_eq!(
+            Solution::super_egg_drop(4, 10000),
+            23
+        );
+    }
 }
 
-fn main() {
-
-    assert_eq!(
-        Solution::super_egg_drop(2, 9),
-        4
-    );
-
-    /*
-    assert_eq!(
-        Solution::super_egg_drop(4, 2000),
-        16
-    );
-     */
-    /*
-    assert_eq!(
-        Solution::super_egg_drop(4, 10000),
-        16
-    );
-     */
-}
+fn main() {}
