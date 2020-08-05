@@ -55,9 +55,11 @@ dp[2][2], dp[2][3], .., dp[2][N - 1]. This means that we have to add
 the second dimension to out dp that corresponds to the amount of availablecontiguous array items from the left part.
 
 If we use linear search to update the answer O(N) times, then we need
-O(N) * O(M) * O(N) time, first two multipiers are explained by the fact
-we are using 2-dimensional dp[*][*]. The last one appears because we
-use binary search to update the best value for a single dp[*][*] value.
+O(N) * O(M) * O(N) time, first two multipiers are explained by
+the fact we are using 2-dimensional dp[*][*]. The last one appears because
+we use linear search to update the best value for a single dp[*][*] value.
 
 It seems to me that binary search can be used not only for case m = 1, but
 also when m = *.
+
+If that is the case, then we can use O(N) * O(N) * O(M).

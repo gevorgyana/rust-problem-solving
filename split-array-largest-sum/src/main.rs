@@ -20,63 +20,71 @@ impl Solution {
             }
         }
 
-        for i in 2..=m as usize {
-            println!("m = {}", i);
-            for j in i as usize..=nums.len() {
-                println!("array elements from {} to {} are used",
-                         i, j
-                );
-                dp[i][j] = i32::max_value();
+        // The answer for N = * and M = 1 is already calculated.
 
-                // sliding window size
-                for k in i..=j {
-                    let window_size = k - i + 1;
-                    println!("window size = {}", k - i + 1);
-                    let range_size = j - i + 1;
-                    println!("range size {}", range_size);
+        for i in 2..=nums.len() {
+            println!("size N = {}", i);
+            for j in 2..=m as usize {
+                println!("divs MM = {}", j);
+                dp[j][i] = i32::max_value();
+                // use linear search to update the answer
+                // some of the answers will be invalid! those where
+                // the following loop will not be executed - those that
+                // have {j} > {i}, meaning that the value of M is greater
+                // than N - in which case it is impossible to give an
+                // answer.
+                for k in j as usize..=i {
+                    println!("begin the rightmost array at {}",
+                             k);
+                    let rightmost_prefix_sum
+                        = dp[1][i] - dp[1][k - 1];
+                    let leftmost_answer
+                        = dp[j - 1][k - 1];
+                    println!("rightmost prefix sum {}; leftmost ans {}",
+                             rightmost_prefix_sum,
+                             leftmost_answer
+                    );
 
-                    // move the window
-                    for s in 0..=(range_size - window_size) {
-                        println!("offset s {}", s);
-                        // update the answer for {i} subarrays and {j}
-                        // as the rightmost available index of the array,
-                        // using {k} and {s} as the location of the
-                        // subarray being checked.
-                        let prefix_sum_rightmost
-                            = dp[1][i + s + window_size - 1]
-                            - dp[1][i + s - 1];
-                        println!("prefix_sum_rightmost {}",
-                                 prefix_sum_rightmost);
-
-                        println!("answer for the remaining subproblem {}",
-                                 dp[i - 1][i + s - 1]
-                        );
-
-                        dp[i][j] = std::cmp::min(
-                            dp[i][j],
-                            std::cmp::max(
-                                dp[i - 1][i + s - 1],
-                                prefix_sum_rightmost
-                            )
-                        );
-                    }
+                    dp[j][i] = std::cmp::min(
+                        dp[j][i],
+                        std::cmp::max(
+                            leftmost_answer,
+                            rightmost_prefix_sum
+                        )
+                    );
                 }
             }
         }
 
         println!("{:?}", dp);
+        println!("orignal {:?}", nums);
 
-        1
+        dp[m as usize][nums.len()]
     }
 }
 
-fn main() {
-    /*
-    Solution::split_array(
-        vec![1, 2, 3], 2
-    );
-     */
-    Solution::split_array(
-        vec![7, 2, 5, 10, 8], 2
-    );
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn lc1() {
+        assert_eq!(
+            Solution::split_array(
+                vec![7, 2, 5, 10, 8], 2
+            ),
+            18
+        );
+    }
+
+    #[test]
+    fn lc2() {
+        assert_eq!(
+            Solution::split_array(
+                vec![7, 2, 5, 10, 8], 3
+            ),
+            14
+        );
+    }
 }
+
+fn main() {}
