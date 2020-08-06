@@ -98,3 +98,40 @@ that we must be willing to equalize the left and right burden.
 So for each point there is left and right burdern. If we move from it to
 the right, we will have the left burden increased by {K}, where K is the
 amount of houses that we have to the left, and decreased by
+----
+It is important to know how to calculate the center of mass, or the answer
+to the problem, when we have only 1 mailbox. Then we can use dynamic
+programming.
+
+let's learn to calculate dynamically the value of dp[N][1] if N - 1 are
+already available.
+
+N = 1:
+place the mailbox right near the house.
+
+N = 2:
+place the mailbox between the houses
+
+N = 3:
+place the mailbox somwehre? where? it becomes more difficult
+
+a        b                            c
+[a + (b - a) / 2, c]
+do binary search here;
+just remember to adjust the formula if you have moved to the right from
+{b}.
+Generally you may need to start from some node i that is less than j.
+It may not always be the case that i + 1 = j.
+
+How much does it cost to do this?
+logarithmic complexity to find the best point to place the mailbox at.
+only need to start from the previous answer point and find the best way
+to satisfy one more value.
+
+but does it matter how many houses we add?
+we could use logarithmic search to find the best way to place a house if
+we had N houses added at once - use binary search to calculate where the
+center of mass is - we have to satisfy the constraint of having minimal
+difference between left and right burdens.
+
+-------
