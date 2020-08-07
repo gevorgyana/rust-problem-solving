@@ -2,7 +2,16 @@ struct Solution {}
 impl Solution {
 
     pub fn min_distance(houses: Vec<i32>, k: i32) -> i32 {
-        // let base: i32 = Self::min_distance_base(&houses);
+        let base
+            = Self::min_distance_base(&houses);
+
+        let mut dp: Vec<Vec<i32>> = vec![];
+        for i in 0..=k {
+            dp.push(
+                [0].repeat(houses.len() + 1)
+            );
+        }
+
         1
     }
 
