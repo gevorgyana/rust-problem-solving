@@ -1,9 +1,15 @@
 struct Solution {}
 impl Solution {
 
-    pub fn min_distance(houses: Vec<i32>) -> i32 {
+    pub fn min_distance(houses: Vec<i32>, k: i32) -> i32 {
+        // let base: i32 = Self::min_distance_base(&houses);
+        1
+    }
+
+    pub fn min_distance_base(houses: &Vec<i32>) ->
+        Option<Vec<(i32, i32)>> {
         if houses.len() == 1 {
-            return 0;
+            return None;
         }
         println!("{:?}", houses);
         let left_cost = | cost: &mut i32, x: (usize, &[&i32]) | {
@@ -41,7 +47,19 @@ impl Solution {
 
         println!("{:?}", left_cost);
         println!("{:?}", right_cost);
+        let packed: Vec<(i32, i32)> = left_cost
+            .into_iter()
+            .zip(
+            right_cost
+                .into_iter()
+                .rev()
+        )
+            .collect();
 
+        println!("{:?}", packed);
+
+        Some(packed)
+/*
         let mut solution: (usize, i32) = (0, i32::max_value());
         for i in 0..left_cost.len() {
             let cost = left_cost[i] + right_cost[left_cost.len() - i - 1];
@@ -53,21 +71,11 @@ impl Solution {
         }
 
         solution.0 as i32
+*/
     }
 }
 
 fn main() {
-/*
-    assert_eq!(
-        Solution::min_distance(vec![1, 2]),
-        1
-    );
-*/
-    println!("----");
 
-    assert_eq!(
-        Solution::min_distance(vec![1, 2, 5]),
-        1
-    );
-
+    Solution::min_distance(vec![1, 3, 5], 2);
 }
