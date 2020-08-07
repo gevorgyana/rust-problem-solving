@@ -36,11 +36,14 @@ impl Solution {
                 .collect()
         };
 
-        let v: Vec<&i32> = houses.iter().collect();
-        let r: Vec<&i32> = houses.iter().rev().collect();
-
-        let left_cost: Vec<i32> = scan_cost(left_cost, v);
-        let right_cost: Vec<i32> = scan_cost(right_cost, r);
+        let left_cost: Vec<i32> = scan_cost(
+            left_cost,
+            houses.iter().collect::<Vec<&i32>>()
+        );
+        let right_cost: Vec<i32> = scan_cost(
+            right_cost,
+            houses.iter().rev().collect::<Vec<&i32>>()
+        );
 
         println!("{:?}", left_cost);
         println!("{:?}", right_cost);
