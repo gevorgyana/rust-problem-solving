@@ -1,137 +1,80 @@
-allocating {k} mailboxes.
+First, let's solve the problem for K = 1 and any N.
+There are M houses.
 
-There are N houses.
+For 1 house (N = 1), we just place the mailbox at its position.
+For 2 houses, place it in the middle.
+For 3 houses, two of which are equidistant from the third one, place it at
+the third one. If the rightmost house is further from the central than the
+leftmost one, then we need to shift the mailbox to the right a bit.
 
-a      b             c | houses
-   y                   | 1 mailbox;
+Say we have the following cituation:
+x1x100x
 
-This task is similar to Codeforces "Коровники" in one of SPBGU gym dp
-contests.
+We try to place the mailbox at position 1 + 50:
+sum-distances-to-the-left = 51 + 50
+sum-distances-to-the-right = 50
+sum-total = 151
+so we might the middle point does not work.
+the solution should be shifted to the left from position 51 by
+approximately 25:
+place at position 1 + 25
+sum-distances-to-the-left = 26 + 25 = 61
+sum-distances-to-the-right = 75
+sum-total = 131
+already better, now to the right and so on...
 
-Complete search?
-Trying each {y} position takes O(N!) where N is the distance between the
-leftmost and rightmost values. Clearly unacceptable.
+This gives us a hint that the address space for the answer is from
+0 to N, and not from 0 to M. So the asnwer indeed might be not guessable
+at all times.
 
-1 station. O(M) to find the best answer - where M is the amount of houses.
-The approach is to try splitting the distance between adjacent houses.
-This will not work.
+We were trying to minimize the difference between the left and the right
+sum - when we achieve the optimal point, we have the best answer - the
+minimal sum to the left and to the right - I don't know why btw, it just
+seems a common thing in dp problems and somehow makes sense, though it
+needs to be proven TODO.
 
-Counter-example.
+The more general formula of calculating sum-total:
+sum-total = sum-total-left + sum-total-right;
+sum-total-left: can be dynamically calculated:
+		say we know the answer for the left part;
+		and how many nodes there are;
+		(this is a similar idea to sum of distances in binary
+		tree; see a related Leetcode problem)
+		we can now say we have come further from F nodes by
+		L units - so we increadse the current answer by
+		F * L.
+sum-total-rigth:similar idea, but move in the opposite direction
 
-a_b             z
- 1 _____________
-        INF
-So we have only 2 points to place the mailbox at, if we follow the
-previous approach. Let's say we place it between the two {a} and {b},
-the cost then is |b - a| + |(b - a) / 2| + |z - b|, and the last value
-is greater than anything else, say INF. So we get INF plus 1.5. Place the
-mailbox between b and z - |INF / 2| + |1|, which is clearly better. Does
-it make sense to shift the mailbox to any direction? At this point, the
-amount of houses to each side matters. If there were 2 houses located
-at positions INF and INF+1 to the right from {b}, then it would make sense
-to shift the point a bit to the right. We would satisfy 2 houses, and have
--2 to the value that we are trying to minimize, and +1. Would it be more
-profitable to place the mailbox at the third position between the two
-furthest from the beginning houses? No, as the cost would then include
-INF, which is unwanted. So we conclude that it is not always optimal to
-place the mailbox at the middle position between some values.
+More than that, we can say that we can give an asnwer for a range
+[N1, N2] in the following manner:
++sum-total-left(N1) - sum-total-left(N1 - 1)
++sum-total-right(N2) - sum-total-right(N2 + 1)
 
-Sometimes it makes sense to place the mailbox near some house.
+So we can now devise the value of the answer for any contiguous subrange
+of [0; N].
 
-a INF b INF c
-Here, the optimal solution would be to place it at {b}.
-----------------------------------
+Alright, now we can solve for any N and K = 1. What if K == 2?
+We have to find the minimal value of a function on a given arrangement of
+mailboxes. An arrangement of a mailbox is a range of houses O(M) that
+are attached to the mailbox. The answer to the problem is the values of
+the sum-total function on the optimal arrangement. It makes no sense for
+one house to be served by 2 mailboxes, although in some cases in may
+happen, we can just pick one of the nearest ones to it and go with it.
+So we can say that the answer consists of non-intelaping contiguous
+ranges, each of which is covered by a mailbox. The covering also should be
+full.
 
-- Can use binary search?
-We can use binary search on M to find the best range to search in, then
-go inside and do a binary search on N to get the best specific value.
-But we can do better and find the center of masses.
+This is a common pattern in dynamic programming. Now we want to solve for
+K = 2, so let's say that we are now arranging the rightmost subrange, and
+we can see that its leftmost end can be anything from 1 to N inclusive.
+Its rightmost end is fixed for a given value N_. We will be calculating
+for every N_ from [0, N]. So we pick the left end, and then update the
+best answer (in terms of function value, as the task does not require us
+to give the optimal arrangement):
 
-- is center of masses the answer? Better come to this result in a
-constructive way.
+dp[1][N_ - 1], which is already calculated, as we have all the values for
+the second coordinate, which takes O(M) space.
++ sum-total(N_, N)
 
-But suppose yes. Then we are equally distant from each of the houses. Then
-we have equal or almost equal left and right burdens, which is what we
-want. Seems correct.
-
-Each new node will pull the center of masses in one way. So we can
-construct the center of masses dynamically.
-
-- is it always profitable to place the thing either in some node, or in
-between some of them.
-Show an example when it is not the case.
-a 2 b
-a 1 x 1 b
-a 1 x 1 b 100 c
-it is now profitable to do this instead
-a b x c
-but where exactly? how should we divide the distance between b and c?
-there is definitely no sense in doing 50|50, as then the left burden
-will be 50 + 2 and the right one will be 50. we will then move left and
-have 50 + 1 vs. 51, which will give us the desired result - literally the
-left and right burderns are equal. this example shows that it is not
-always optimal to place the mailbox at a specifically defined place - it
-may be anything other than center of two adjacent houses or the houses
-themselves.
-
-- how does the result change from some optimal point?
-How the result changes. When we only start, we have the left and right
-burdens. We start at the leftmost house and the left burden is 0, while
-the rightmost burden is the sum of all houses' coords - (N - 1) * coord of
-the leftmost house. If we move just one step right, we will be closer to
-the optimum by (N - 1) points. If we move 2 points to the right, the
-left burden will be 2 and the right one will decrease by (N - 1) * 2,
-compared to the initial state. We will continue this process until we
-reach the second house. Then the left burden.
-
-We want minimum total distance, this constraint is satisfied when we have
-the minimal difference between the right and left burdens. Why? Suppose
-not. Then we might go one step to the right and the left burden will
-increase by N, the right will decrease by M. So the value left_burden
-- right_burden will move to either negative or positive side from 0.
-If negative, then taking absolute values of these values will actually
-give greater values of burden from the right, and the absolute value of
-the left burden will preserve the values. So what do we get? We have just
-increased the values that we are trying to minimize. Which makes me think
-that we must be willing to equalize the left and right burden.
-
-So for each point there is left and right burdern. If we move from it to
-the right, we will have the left burden increased by {K}, where K is the
-amount of houses that we have to the left, and decreased by
-----
-It is important to know how to calculate the center of mass, or the answer
-to the problem, when we have only 1 mailbox. Then we can use dynamic
-programming.
-
-let's learn to calculate dynamically the value of dp[N][1] if N - 1 are
-already available.
-
-N = 1:
-place the mailbox right near the house.
-
-N = 2:
-place the mailbox between the houses
-
-N = 3:
-place the mailbox somwehre? where? it becomes more difficult
-
-a        b                            c
-[a + (b - a) / 2, c]
-do binary search here;
-just remember to adjust the formula if you have moved to the right from
-{b}.
-Generally you may need to start from some node i that is less than j.
-It may not always be the case that i + 1 = j.
-
-How much does it cost to do this?
-logarithmic complexity to find the best point to place the mailbox at.
-only need to start from the previous answer point and find the best way
-to satisfy one more value.
-
-but does it matter how many houses we add?
-we could use logarithmic search to find the best way to place a house if
-we had N houses added at once - use binary search to calculate where the
-center of mass is - we have to satisfy the constraint of having minimal
-difference between left and right burdens.
-
--------
+Calculate this for every N_ and you will have the new induction base,
+keep going until you calculate everything.

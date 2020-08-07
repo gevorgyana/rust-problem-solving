@@ -31,7 +31,6 @@ impl Solution {
             *cost += diff * (x.0 as i32 + 1);
             Some(*cost)
         };
-        // accepts references
         fn scan_cost<F>(scan_rule: F, vec: Vec<&i32>) -> Vec<i32>
         where F : FnMut(&mut i32, (usize, &[&i32])) -> Option<i32> {
             std::iter::once(0)
@@ -53,7 +52,6 @@ impl Solution {
             right_cost,
             houses.iter().rev().collect::<Vec<&i32>>()
         );
-
         println!("{:?}", left_cost);
         println!("{:?}", right_cost);
         let packed: Vec<(i32, i32)> = left_cost
@@ -64,9 +62,7 @@ impl Solution {
                 .rev()
         )
             .collect();
-
         println!("{:?}", packed);
-
         Some(packed)
 /*
         let mut solution: (usize, i32) = (0, i32::max_value());
