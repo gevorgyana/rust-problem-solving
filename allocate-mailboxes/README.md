@@ -78,3 +78,30 @@ the second coordinate, which takes O(M) space.
 
 Calculate this for every N_ and you will have the new induction base,
 keep going until you calculate everything.
+
+a b c d
+d(a, c) = d(a, b) + d(b, c)
+l1(a) = 0
+l1(b) = d(a, b) * 1 + l1(a)
+l1(c) = d(b, c) * 2 + l1(b)
+l1(d) = d(c, d) * 3 + l1(c) = d(c, d) * 3 + d(b, c) * 2 + d(a, b) * 1 + 0
+= A
+
+l2(a) = none
+l2(b) = 0
+l2(c) = d(b, c) * 1 + l2(b)
+l2(d) = d(c, d) * 2 + l2(c) = d(c, d) * 2 + d(b, c) * 1 + 0
+= B
+
+l2(c) from l1(*) only?
+
+B = A - d(c, d) - d(b, c) - d(a, b) - 0
+
+l3(d) = d(c, d)
+= C
+
+l3 from l1(*) only?
+
+so we might use the following formula to calculate l{i}(x):
+use O(i) actions to subtract from l1(x) certain sums - it takes too long;
+we can just maintain the right prefix and it will take us O(1)

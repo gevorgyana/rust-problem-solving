@@ -8,20 +8,24 @@ impl Solution {
             = Self::min_distance_base(&houses);
         println!("{:?}", prefix_by_house);
 
-        1
-    }
+        // for each house
+        for ws in 0..houses.len() {
+            println!("prefix last {}", prefix_by_house[houses.len() - 1]);
+            println!("prefix current {}", prefix_by_house[ws]);
+            println!("# nodes to the right {}", (houses.len() - ws - 1));
 
-    /// arrange one mailbox among N houses.
-    fn basic_arrangement(prefix_by_house: &[i32],
-                         houses: &Vec<i32>,
-                         i: usize) {
+            let rcost
+                = prefix_by_house[houses.len() - 1]
+                - prefix_by_house[ws]
+                * ws as i32
+                ;
 
-        // linear search
-        for i in 0..prefix_by_house.len() - 1 {
-            for j in houses[i]..houses[i + 1] {
-                println!("{}", j);
-            }
+            println!("{}", rcost);
         }
+
+        // for the last house
+
+        1
     }
 
     fn min_distance_base(houses: &Vec<i32>) ->
@@ -55,4 +59,8 @@ impl Solution {
 
 fn main() {
     Solution::min_distance(vec![1, 3, 5], 2);
+    /*
+    println!("---");
+    Solution::min_distance(vec![1], 2);
+     */
 }
