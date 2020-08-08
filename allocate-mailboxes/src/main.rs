@@ -8,22 +8,23 @@ impl Solution {
             = Self::min_distance_base(&houses);
         println!("{:?}", prefix_by_house);
 
-        // As usual, {i} is for # of houses from the left that are used
-        // {j} is the amount of resource that we have - in this case
-        // houses
-        let mut dp: Vec<Vec<i32>> = vec![];
-        for i in 0..=k {
-            dp.push(
-                [0].repeat(houses.len() + 1)
-            );
-        }
-
-
-
         1
     }
 
-    pub fn min_distance_base(houses: &Vec<i32>) ->
+    /// arrange one mailbox among N houses.
+    fn basic_arrangement(prefix_by_house: &[i32],
+                         houses: &Vec<i32>,
+                         i: usize) {
+
+        // linear search
+        for i in 0..prefix_by_house.len() - 1 {
+            for j in houses[i]..houses[i + 1] {
+                println!("{}", j);
+            }
+        }
+    }
+
+    fn min_distance_base(houses: &Vec<i32>) ->
         Vec<i32>
     {
         // at the first house, we have 0 houses to the left and 0 cost of

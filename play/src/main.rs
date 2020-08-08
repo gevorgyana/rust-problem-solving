@@ -1,18 +1,8 @@
-struct S {
-    field: i32,
-}
-
 fn main() {
-    let s = S {field: 0};
-    let mut v: Vec<S> = vec![];
-    for i in 0..10 {
-        if i == 0 {
-            v.push(s);
-        }
-        /* this does not work either */
-        match i {
-            0 => { v.push(s); },
-            _ => (),
-        }
-    }
+    let x = vec![1, 2, 3];
+    let mut y = &x[0..3];
+    println!("{:?}", y);
+    y = &y[1..3];
+    println!("{:?}", y);
+    println!("{:?}", y[0]);
 }
