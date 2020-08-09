@@ -105,3 +105,30 @@ l3 from l1(*) only?
 so we might use the following formula to calculate l{i}(x):
 use O(i) actions to subtract from l1(x) certain sums - it takes too long;
 we can just maintain the right prefix and it will take us O(1)
+
+Nope! Wrong! Here is how to recaclulate L{i}:
+
+Suppose we have calulated L1(*),
+now we need L2(*)
+a --- b --- ... --- z
+c --- d --- ... --- z
+If we want to calcualte Lc(z), and we have La(*), then we do the
+following:
+there are exactly 2 extra ways coming from {z} to {c} - one of them uses
+{c} to get to {a}, and the other one - to get to {b}. So we subtract the
+amount of nodes to the left from {c} * the distance from {c} to {z} from
+the values of La(z). Then we also need to remove the little paths from the
+left - the path from {a} to {b}, which is d(a,b) + d(b,c), and then the
+path from {b} to {c}, which is d(b,c). But this is the values of
+La{c}.
+
+Exactly, La{c} is calculated as follows:
+La{a} = 0
+La{b} = 0 + d(a, b)
+La{c} = d(a, b) + 2 * d(b, c)
+Yeah it works!
+
+-----------------
+Maybe we can use the left prefix sum to build the right prefix sum?
+Yes, the left prefix sum is now mellable to represent any contiguous range in the array, so now we can just call it right prefix sum and use the
+previous formulas for calculations.
