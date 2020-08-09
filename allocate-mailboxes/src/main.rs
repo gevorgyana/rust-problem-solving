@@ -30,7 +30,7 @@ impl Solution {
         // at houses. This is base case of dp.
 
         // allocate at any point in the range now
-        for hm_houses_avail in 1..houses.len() {
+        for hm_houses_avail in 1..=houses.len() {
             println!("# houses {}", hm_houses_avail);
             let mut ans = i32::max_value();
 
@@ -69,6 +69,7 @@ impl Solution {
                             = left_prefix[window_start]
                             + (checked - houses[window_start]);
 
+                        /*
                         println!(" ans for the last node {} - and for
 the current rightmost node in the window {} - # nodes to the left from the rightmost window node {} * distance from the rightmost window node to the rightmost node {} + hm nodes the right from the tested point {} * the distance from the tested point and the rightmost window node {}",
 
@@ -83,6 +84,7 @@ the current rightmost node in the window {} - # nodes to the left from the right
                                  - checked
 
                         );
+                         */
 
                         let right_cost
                             =

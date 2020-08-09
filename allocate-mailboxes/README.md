@@ -132,3 +132,5 @@ Yeah it works!
 Maybe we can use the left prefix sum to build the right prefix sum?
 Yes, the left prefix sum is now mellable to represent any contiguous range in the array, so now we can just call it right prefix sum and use the
 previous formulas for calculations.
+
+        // right price is left price with a shift.
