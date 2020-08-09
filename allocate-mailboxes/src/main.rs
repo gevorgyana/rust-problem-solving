@@ -68,31 +68,17 @@ impl Solution {
 
                         ans = std::cmp::min(
                             ans,
-                            (left_cost - right_cost).abs()
+                            left_cost
+                                + right_cost
                         );
-
-                        // println!("left cost {}", left_cost);
-                        // println!("right cost {}", right_cost);
                     }
             }
-
-            // check the last house - this works when N = 1
-            /*
-            println!("checking the last house, its index is {}",
-                     hm_houses_avail - 1
-            );
-            println!("coordinate of the last hosue {}",
-                     houses[hm_houses_avail - 1]);
-             */
             let left_cost
                 = left_prefix[hm_houses_avail - 1];
             let right_cost = 0;
-            // println!("left cost {}", left_cost);
-            // println!("right cost {}", right_cost);
-
             ans = std::cmp::min(
                 ans,
-                (left_cost - right_cost).abs()
+                left_cost + right_cost
             );
             // println!("?The answer {}", ans);
             dp[1][hm_houses_avail] = ans;
@@ -104,22 +90,12 @@ impl Solution {
         // calculate only for the last one.
         for left_part_sz in 1..houses.len() {
             println!("");
-            println!("size of the left part {}", left_part_sz);
+            // println!("size of the left part {}", left_part_sz);
             for hm_houses_avail in 1..=houses.len() - left_part_sz {
                 println!("# houses available {}", hm_houses_avail);
                 let mut ans = i32::max_value();
 
                 for window_start in 0..hm_houses_avail - 1 {
-
-                    println!("window start {}, end {}",
-                             window_start + left_part_sz,
-                             window_start + 1 + left_part_sz);
-                    println!("house start {}, end {}",
-                             houses[window_start + left_part_sz],
-                             houses[window_start + 1 + left_part_sz]);
-                    println!("last index is {}",
-                             hm_houses_avail - 1 + left_part_sz
-                    );
 
                     let window_start = window_start + left_part_sz;
                     let hm_houses_avail = hm_houses_avail + left_part_sz;
@@ -143,11 +119,6 @@ impl Solution {
                                 * (houses[window_start + 1]
                                    - houses[left_part_sz])
                                 ;
-/*
-                            println!("left_prefix_this_rightmost_window {}",
-                                     left_prefix_this_rightmost_window
-                            );
-*/
 
                             let left_prefix_this_last_house
                                 = left_prefix[hm_houses_avail - 1]
@@ -157,53 +128,20 @@ impl Solution {
                                    - houses[left_part_sz])
                                 ;
 
-                            /*
-                            println!(
-                                "left_prefix_this_last_house {}",
-                                left_prefix_this_last_house
-                            );
-
-                            println!(
-                                "# nodes to the left from the selected node(window + 1) {}", (window_start as i32 + 1) - left_part_sz as i32
-                            );
-
-                            println!(
-                                "excessive distance to the last house from (window + 1) {}",
-                                (houses[hm_houses_avail - 1]
-                                 - houses[window_start + 1])
-                            );
-*/
                             let right_cost_window_1
                                 = left_prefix_this_last_house
                                 - left_prefix_this_rightmost_window
                                 - ((window_start as i32 + 1) - left_part_sz as i32)
                                 * (houses[hm_houses_avail - 1]
                                    - houses[window_start + 1]);
-/*
-                            println!(
-                                "right_cost_window_1 {}",
-                                right_cost_window_1
-                            );
-*/
+
                             let additional_shift
                                 = (hm_houses_avail as i32 - 1
                                    - window_start as i32)
                                 * (houses[window_start + 1]
                                    - checked)
                                 ;
-/*
-                            println!(
-                                "shifting from # nodes {}",
-                                (hm_houses_avail as i32 - 1
-                                   - window_start as i32)
-                            );
 
-                            println!(
-                                "shifting by distance {}",
-                                (houses[window_start + 1]
-                                   - checked)
-                            );
-*/
                             let right_cost
                                 = right_cost_window_1
                                 + additional_shift
@@ -211,19 +149,13 @@ impl Solution {
 
                             ans = std::cmp::min(
                                 ans,
-                                (left_cost - right_cost).abs()
+                                left_cost + right_cost
                             );
 
-                            println!("???left cost {}", left_cost);
-                            println!("!!!right cost {}", right_cost);
+                            // println!("???left cost {}", left_cost);
+                            // println!("!!!right cost {}", right_cost);
                         }
                 }
-
-                println!("checking the last house, its index is {}",
-                         hm_houses_avail - 1 + left_part_sz
-                );
-                println!("coordinate of the last house {}",
-                         houses[hm_houses_avail - 1 + left_part_sz]);
 
                 let left_cost
                     = left_prefix[hm_houses_avail - 1 + left_part_sz]
@@ -234,18 +166,26 @@ impl Solution {
                        );
 
                 let right_cost = 0;
-                println!("left cost {}", left_cost);
-                println!("right cost {}", right_cost);
+
+                println!("the cost of solving k = {}, n = {} is {}",
+                         1,
+                         left_part_sz,
+                         dp[1][left_part_sz]
+                );
 
                 ans = std::cmp::min(
                     ans,
-                    (left_cost - right_cost).abs()
+                    left_cost + right_cost
                 );
 
-                println!("?The answer {}", ans);
-                dp[2][hm_houses_avail] = ans;
+                dp[2][hm_houses_avail + left_part_sz]
+                    = ans
+                    + dp[1][left_part_sz]
+                    ;
             }
         }
+
+        println!("{:?}", dp);
 
         1
     }
