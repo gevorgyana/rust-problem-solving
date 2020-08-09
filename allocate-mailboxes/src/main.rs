@@ -117,31 +117,96 @@ impl Solution {
                     println!("house start {}, end {}",
                              houses[window_start + left_part_sz],
                              houses[window_start + 1 + left_part_sz]);
+                    println!("last index is {}",
+                             hm_houses_avail - 1 + left_part_sz
+                    );
 
-                    /*
+                    let window_start = window_start + left_part_sz;
+                    let hm_houses_avail = hm_houses_avail + left_part_sz;
+
                     for checked in houses[window_start]..
                         houses[window_start + 1] {
 
                             let left_cost
                                 = left_prefix[window_start]
+                                - left_prefix[left_part_sz]
+                                - left_part_sz as i32
+                                * (houses[window_start]
+                                   - houses[left_part_sz]
+                                )
                                 + (checked - houses[window_start]);
 
-                            let right_cost
-                                =
-                                left_prefix[hm_houses_avail - 1]
-                                -
-                                left_prefix[window_start + 1]
-                                -
-                                (window_start as i32 + 1)
-                                *
+                            let left_prefix_this_rightmost_window
+                                = left_prefix[window_start + 1]
+                                - left_prefix[left_part_sz]
+                                - left_part_sz as i32
+                                * (houses[window_start + 1]
+                                   - houses[left_part_sz])
+                                ;
+/*
+                            println!("left_prefix_this_rightmost_window {}",
+                                     left_prefix_this_rightmost_window
+                            );
+*/
+
+                            let left_prefix_this_last_house
+                                = left_prefix[hm_houses_avail - 1]
+                                - left_prefix[left_part_sz]
+                                - left_part_sz as i32
+                                * (houses[hm_houses_avail - 1]
+                                   - houses[left_part_sz])
+                                ;
+
+                            /*
+                            println!(
+                                "left_prefix_this_last_house {}",
+                                left_prefix_this_last_house
+                            );
+
+                            println!(
+                                "# nodes to the left from the selected node(window + 1) {}", (window_start as i32 + 1) - left_part_sz as i32
+                            );
+
+                            println!(
+                                "excessive distance to the last house from (window + 1) {}",
                                 (houses[hm_houses_avail - 1]
                                  - houses[window_start + 1])
-                                +
+                            );
+*/
+                            let right_cost_window_1
+                                = left_prefix_this_last_house
+                                - left_prefix_this_rightmost_window
+                                - ((window_start as i32 + 1) - left_part_sz as i32)
+                                * (houses[hm_houses_avail - 1]
+                                   - houses[window_start + 1]);
+/*
+                            println!(
+                                "right_cost_window_1 {}",
+                                right_cost_window_1
+                            );
+*/
+                            let additional_shift
+                                = (hm_houses_avail as i32 - 1
+                                   - window_start as i32)
+                                * (houses[window_start + 1]
+                                   - checked)
+                                ;
+/*
+                            println!(
+                                "shifting from # nodes {}",
                                 (hm_houses_avail as i32 - 1
-                                 - window_start as i32)
-                                *
+                                   - window_start as i32)
+                            );
+
+                            println!(
+                                "shifting by distance {}",
                                 (houses[window_start + 1]
-                                 - checked)
+                                   - checked)
+                            );
+*/
+                            let right_cost
+                                = right_cost_window_1
+                                + additional_shift
                                 ;
 
                             ans = std::cmp::min(
@@ -149,10 +214,9 @@ impl Solution {
                                 (left_cost - right_cost).abs()
                             );
 
-                            println!("left cost {}", left_cost);
-                            println!("right cost {}", right_cost);
+                            println!("???left cost {}", left_cost);
+                            println!("!!!right cost {}", right_cost);
                         }
-                     */
                 }
 
                 println!("checking the last house, its index is {}",
