@@ -68,8 +68,7 @@ impl Solution {
 
                         ans = std::cmp::min(
                             ans,
-                            left_cost
-                                + right_cost
+                            (left_cost - right_cost).abs()
                         );
                     }
             }
@@ -84,24 +83,24 @@ impl Solution {
             dp[1][hm_houses_avail] = ans;
         }
 
-        // println!("{:?}", dp);
+        println!("{:?}", dp);
 
         for kc in 2..=k {
+            if kc == 3 {
+                break;
+            }
+
             for left_part_sz in 1..houses.len() {
-                // println!("");
-                // println!("size of the left part {}", left_part_sz);
+                println!("");
+                println!("size of the left part {}", left_part_sz);
                 for hm_houses_avail in 1..=houses.len() - left_part_sz {
-                    // println!("# houses available {}", hm_houses_avail);
+                    println!("# houses available {}", hm_houses_avail);
                     let mut ans = i32::max_value();
-
                     for window_start in 0..hm_houses_avail - 1 {
-
                         let window_start = window_start + left_part_sz;
                         let hm_houses_avail = hm_houses_avail + left_part_sz;
-
                         for checked in houses[window_start]..
                             houses[window_start + 1] {
-
                                 let left_cost
                                     = left_prefix[window_start]
                                     - left_prefix[left_part_sz]
@@ -148,11 +147,11 @@ impl Solution {
 
                                 ans = std::cmp::min(
                                     ans,
-                                    left_cost + right_cost
+                                    (left_cost - right_cost).abs()
                                 );
 
-                                // println!("???left cost {}", left_cost);
-                                // println!("!!!right cost {}", right_cost);
+                                println!("???left cost {}", left_cost);
+                                println!("!!!right cost {}", right_cost);
                             }
                     }
 
@@ -166,17 +165,15 @@ impl Solution {
 
                     let right_cost = 0;
 
-                    /*
                     println!("the cost of solving k = {}, n = {} is {}",
                     1,
                     left_part_sz,
                     dp[1][left_part_sz]
                 );
-                     */
 
                     ans = std::cmp::min(
                         ans,
-                        left_cost + right_cost
+                        (left_cost - right_cost).abs()
                     );
 
                     dp[kc as usize][hm_houses_avail + left_part_sz]
@@ -210,19 +207,11 @@ impl Solution {
 #[cfg(test)]
 mod test {
     use super::*;
-    #[test]
+    //#[test]
     fn cs1() {
         assert_eq!(
             Solution::min_distance(vec![1, 2, 3, 4, 5], 2),
             4
-        );
-    }
-
-    #[test]
-    fn lc1() {
-        assert_eq!(
-            Solution::min_distance(vec![1,4,8,10,20], 3),
-            5
         );
     }
 }
