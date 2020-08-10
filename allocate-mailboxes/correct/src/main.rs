@@ -4,7 +4,7 @@ struct Solution {}
 
 impl Solution {
     pub fn min_distance(houses: Vec<i32>, k: i32) -> i32 {
-        println!("houses {:?}", houses);
+        // println!("houses {:?}", houses);
 
         let left_rule = |scanned: &mut i32, x: (usize, &[i32])| {
             let diff = x.1[1] - x.1[0];
@@ -19,9 +19,11 @@ impl Solution {
                 left_rule)
             ;
 
+        // println!("{:?}", left_prefix);
+
         let mut dp: Vec<Vec<i32>> = vec![];
         for i in 0..=k {
-            dp.push([0].repeat(houses.len() + 1));
+            dp.push([i32::max_value()].repeat(houses.len() + 1));
         }
 
         /// Calcualtes the amount of nodes to the right from {i} to {j}
@@ -41,17 +43,56 @@ impl Solution {
 
         // the answer for k = 1
         for i in 0..houses.len() {
-            println!("the last house {}", i);
             let place_at = i / 2;
             let left_cost = left_prefix[place_at];
             let right_cost
                 = right_from_till(place_at, i, &left_prefix, &houses);
-            println!("right cost {}", right_cost);
-            dp[1][i] = left_cost + right_cost;
-            println!("dp = {}", dp[1][i]);
+            dp[1][i + 1] = left_cost + right_cost;
         }
 
-        1
+        // println!("{:?}", dp);
+
+        for kc in 2..=k as usize {
+            // if kc == 3 { break; }
+            // println!("kc = {}", kc);
+            for nc in kc - 1..houses.len() {
+                // println!("nc = {}", nc);
+                // the beginning of the rightmost range
+                for rl in kc - 1..=nc {
+                    // println!("rl = {}", rl);
+                    // rl..nc is the rightmost range
+                    let offset = (nc - rl) / 2;
+                    let place_at = (rl + offset);
+                    let left_cost
+                        = right_from_till(rl, rl + offset,
+                                          &left_prefix, &houses);
+                    let right_cost
+                        = right_from_till(rl + offset, nc,
+                                          &left_prefix, &houses);
+
+                    /*
+                    println!("left_cost = {}", left_cost);
+                    println!("right_cost = {}", right_cost);
+                     */
+
+                    dp[kc][nc + 1] = std::cmp::min(dp[kc][nc + 1],
+                                                   left_cost + right_cost
+                                                   + dp[kc - 1][rl]
+                    );
+
+                    /*
+                    println!("dp[kc][nc + 1] updated with {}",
+                             left_cost + right_cost
+                             + dp[kc - 1][rl]
+                    );
+                     */
+                }
+            }
+        }
+
+        // println!("{:?}", dp);
+
+        dp[k as usize][houses.len()]
     }
 
     fn prefix<F> (vec: &Vec<i32>, rule: F) -> Vec<i32>
