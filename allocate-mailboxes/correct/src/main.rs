@@ -1,10 +1,22 @@
 fn main() {}
 
+/* 0 3 7 10
+ *
+ * 1 4 6 7
+ *
+ * cost = 3 + 1 + 2 * 2 = 8
+ *
+ * 7 4 6 1
+ * cost =
+ */
+
 struct Solution {}
 
 impl Solution {
-    pub fn min_distance(houses: Vec<i32>, k: i32) -> i32 {
-        // println!("houses {:?}", houses);
+    pub fn min_distance(mut houses: Vec<i32>, k: i32) -> i32 {
+
+        houses.sort();
+        println!("houses {:?}", houses);
 
         let left_rule = |scanned: &mut i32, x: (usize, &[i32])| {
             let diff = x.1[1] - x.1[0];
@@ -19,7 +31,7 @@ impl Solution {
                 left_rule)
             ;
 
-        // println!("{:?}", left_prefix);
+        println!("{:?}", left_prefix);
 
         let mut dp: Vec<Vec<i32>> = vec![];
         for i in 0..=k {
@@ -28,9 +40,9 @@ impl Solution {
 
         /// Calcualtes the amount of nodes to the right from {i} to {j}
         /// by manipulating {view} in O(1) time.
-        /// Note that we could also implement a similar function
-        /// {left_starting_from}, but it would do the same - so
-        /// just shift the inidices and call this function instead.
+        /// Note that we cannot implement a similar function
+        /// {left_starting_from} by flipping indices - see README.md.
+        /// left_from_j_to_i != right_from_i_to_j
         fn right_from_till(i: usize, j: usize,
                            left_prefix_view: &Vec<i32>,
                            houses_view: &Vec<i32>
@@ -47,10 +59,12 @@ impl Solution {
             let left_cost = left_prefix[place_at];
             let right_cost
                 = right_from_till(place_at, i, &left_prefix, &houses);
+            println!("i {}", i);
+            println!("place_at {}", place_at);
+            println!("left_cost {}", left_cost);
+            println!("right_cost {}", right_cost);
             dp[1][i + 1] = left_cost + right_cost;
         }
-
-        // println!("{:?}", dp);
 
         for kc in 2..=k as usize {
             // if kc == 3 { break; }
@@ -90,7 +104,7 @@ impl Solution {
             }
         }
 
-        // println!("{:?}", dp);
+        println!("{:?}", dp);
 
         dp[k as usize][houses.len()]
     }
@@ -115,11 +129,19 @@ impl Solution {
 #[cfg(test)]
 mod test {
     use super::*;
-    #[test]
+    //#[test]
     fn lc1() {
         assert_eq!(
             Solution::min_distance(vec![1, 4, 8, 10, 20], 3),
             5
+        );
+    }
+
+    #[test]
+    fn lc2() {
+        assert_eq!(
+            Solution::min_distance(vec![7, 4, 6, 1], 1),
+            8
         );
     }
 }

@@ -108,12 +108,14 @@ dp[i][*], so we have the needed information by the time we are working
 with the i-th row. Done?
 
 LC example:
+there are errors!
 
 h = [1, 4, 8, 10, 20], k = 3
 dp[1][1] = 0
 dp[1][2] = 3
 dp[1][3] = 7
-dp[1][4] = 13
+dp[1][4] = 13 NOPE! 17  is the right answer; I was making mistakes while
+calculating this
 dp[1][5] = 4 + 4 + 3 + 2 + 2 + 10 = 8 + 4 + 3 + 10 = 25
 
 dp[2][1] = none
@@ -164,3 +166,14 @@ dp[3][5] =
 = 5
 
 The same as in the example, so it should work.
+
+One more problem:
+You cannot use the left_prefix array for calculating the sum of distances
+from some {i} to the right of it - {j} - you can only calculate the sum
+of distances to the left from {j} to {i} - here is an example.
+
+4 6 7
+
+left_from_third = 1 + 2 = 3
+right_from_first = 2 + 2 + 1 = 5
+so these things are not always equal.
