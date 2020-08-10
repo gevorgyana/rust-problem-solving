@@ -1,15 +1,5 @@
 fn main() {}
 
-/* 0 3 7 10
- *
- * 1 4 6 7
- *
- * cost = 3 + 1 + 2 * 2 = 8
- *
- * 7 4 6 1
- * cost =
- */
-
 struct Solution {}
 
 impl Solution {
@@ -24,6 +14,12 @@ impl Solution {
             Some(*scanned)
         };
 
+        let right_rule = |scanned: &mut i32, x: (usize, &[i32])| {
+            let diff = x.1[0] - x.1[1];
+            *scanned += diff * (x.0 + 1) as i32;
+            Some(*scanned)
+        };
+
         let left_prefix
             =
             Self::prefix(
@@ -31,19 +27,32 @@ impl Solution {
                 left_rule)
             ;
 
-        println!("{:?}", left_prefix);
+        let right_prefix
+            =
+            Self::prefix(
+                &houses
+                    .clone()
+                    .into_iter()
+                    .rev()
+                    .collect(),
+                right_rule)
+            ;
+
+        // println!("{:?}", left_prefix);
+        // println!("{:?}", right_prefix);
 
         let mut dp: Vec<Vec<i32>> = vec![];
         for i in 0..=k {
             dp.push([i32::max_value()].repeat(houses.len() + 1));
         }
 
-        /// Calcualtes the amount of nodes to the right from {i} to {j}
-        /// by manipulating {view} in O(1) time.
+        /// Produces the sum of all distances from {j} to every {k}
+        /// such that {k} >= {i} by manipulating {view} in O(1) time.
+        ///
         /// Note that we cannot implement a similar function
-        /// {left_starting_from} by flipping indices - see README.md.
-        /// left_from_j_to_i != right_from_i_to_j
-        fn right_from_till(i: usize, j: usize,
+        /// {right_starting_from} by flipping indices - see README.md.
+        /// i < j
+        fn left_from_till(i: usize, j: usize,
                            left_prefix_view: &Vec<i32>,
                            houses_view: &Vec<i32>
         ) -> i32 {
@@ -53,16 +62,43 @@ impl Solution {
                 * (houses_view[j] - houses_view[i])
         }
 
+        /// Produces the sum of the all distances from {i}
+        /// to every {k} such that {k} <= {j}; i < j
+        fn right_from_till(i: usize, j: usize,
+                           right_prefix_view: &Vec<i32>,
+                           houses_view: &Vec<i32>
+        ) -> i32 {
+            let n = houses_view.len();
+
+            /*
+            println!("n - 1 - i {} | n - 1 - j {}",
+                     n - 1 - i,
+                     n - 1 - j
+            );
+            println!("right[n - 1 - i] {}", right_prefix_view[n - 1 - i]);
+            println!("right[n - 1 - j] {}", right_prefix_view[n - 1 - j]);
+            println!("n - 1 - j {}", (n - 1 - j));
+            println!("h[n - 1 - j] - h[n - 1 - i] {}",
+                     (houses_view[n - 1 - j] - houses_view[n - 1 - i])
+            );
+             */
+
+            right_prefix_view[n - 1 - i]
+                - right_prefix_view[n - 1 - j]
+                - (n - 1 - j) as i32
+                * (houses_view[j] - houses_view[i])
+        }
+
         // the answer for k = 1
         for i in 0..houses.len() {
+            // println!("i {}", i);
             let place_at = i / 2;
+            // println!("place_at {}", place_at);
             let left_cost = left_prefix[place_at];
-            let right_cost
-                = right_from_till(place_at, i, &left_prefix, &houses);
-            println!("i {}", i);
-            println!("place_at {}", place_at);
-            println!("left_cost {}", left_cost);
-            println!("right_cost {}", right_cost);
+            let right_cost = right_from_till(i / 2, i,
+                                             &right_prefix, &houses);
+            // println!("left_cost {}", left_cost);
+            // println!("right_cost {}", right_cost);
             dp[1][i + 1] = left_cost + right_cost;
         }
 
@@ -76,18 +112,16 @@ impl Solution {
                     // println!("rl = {}", rl);
                     // rl..nc is the rightmost range
                     let offset = (nc - rl) / 2;
-                    let place_at = (rl + offset);
+                    let place_at = rl + offset;
                     let left_cost
-                        = right_from_till(rl, rl + offset,
+                        = left_from_till(rl, rl + offset,
                                           &left_prefix, &houses);
                     let right_cost
                         = right_from_till(rl + offset, nc,
-                                          &left_prefix, &houses);
+                                          &right_prefix, &houses);
 
-                    /*
-                    println!("left_cost = {}", left_cost);
-                    println!("right_cost = {}", right_cost);
-                     */
+                    // println!("left_cost = {}", left_cost);
+                    // println!("right_cost = {}", right_cost);
 
                     dp[kc][nc + 1] = std::cmp::min(dp[kc][nc + 1],
                                                    left_cost + right_cost
@@ -104,8 +138,7 @@ impl Solution {
             }
         }
 
-        println!("{:?}", dp);
-
+        // println!("{:?}", dp);
         dp[k as usize][houses.len()]
     }
 
@@ -129,7 +162,8 @@ impl Solution {
 #[cfg(test)]
 mod test {
     use super::*;
-    //#[test]
+
+    #[test]
     fn lc1() {
         assert_eq!(
             Solution::min_distance(vec![1, 4, 8, 10, 20], 3),
