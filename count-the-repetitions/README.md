@@ -153,8 +153,88 @@ B1 = x
 B2 = xy
 B3 = xyz
 
-let's solve for this case;
+Let's solve for this case;
 Solution(A, B1) = max # of reps of B1 such that the resulting word can
 still be found as a subsequence of A.
 Solution(A, B2) = [by analogy],
 Solution(A, B3) = [by analogy].
+
+Solution(A, B1):
+for all chars from A, check how we can get x from it; count the # of those
+in one word, and multiply that by N. Done.
+
+Solution(A, B2):
+The answer for the previous lenght of the word B2, which is the answer
+for B1, should be already calculated. So we know that. We also know that
+now we can face with a situation where we would need more than one
+instance of A to get at least one B2 (check one of the previous
+paragraphs).
+
+--
+A aaa * 2
+B aa * 1
+
+answer for a * 1 is linear funciton y = 3 * x
+answer for aa * 1 is y:
+ 1 -> 1
+ 2 -> 3
+ 3 -> 4
+ 4 -> 6,
+ ...
+it works like if we did a similar dp as the 'all substrings that match
+a specific word', but here is a more interesting case:
+
+A abcd * 2
+B da * 1
+
+just {d}:
+abcd
+   1
+
+then {da}:
+abcd
+   1 - we saw it previously
+       so we go on and check this out
+       what if the next to it is something that we need?
+       that means we have to look at the first letter,
+       but that also means that we will only benefit from such a division
+       on each joint that we have.
+
+       so we mark this thing here as one.
+1
+
+now we have got to the full length and see the results. Multiply that
+thing by the # of reps of A that we have and divide it by the # of reps
+in B that we are given. Seems like done.
+
+A remark. If we are at B-length that is greater than the position
+(in 1-indexing) of the current character that is marked with one, we know
+it is something that appears only when joints are allowed.
+
+---
+
+What if more than 1 concatenation is required to obtain the desired
+string?
+
+Like here:
+A = abc * N
+B = aaa * M
+?
+Can we handle that with dp?
+Suppose we could have a whole array.
+What is then?
+We could just use the dynamic programming approach on the reduces strings
+then. What's the difference? That would take too much time (10 ^ 16),
+and a lot of space too.
+
+So the problem is really that we have huge strings but we know that they
+have cyclic nature. And we are required to answer what the maximum
+number of times that we have to repeat one of them to fit into the other
+is.
+
+Let's say we can iterate the maximum number and do that in logarithmic
+search, so that we have that number M.
+
+So here is the problem. Find if there is a subsequece B in A, where
+A = [some 100-char pattern] * N
+B = ([some 100-char pattern] * K) * M
