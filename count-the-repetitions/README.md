@@ -238,3 +238,83 @@ search, so that we have that number M.
 So here is the problem. Find if there is a subsequece B in A, where
 A = [some 100-char pattern] * N
 B = ([some 100-char pattern] * K) * M
+
+N, M are 10^6 => it makes no sense for K * M to be greater than 10^6.
+We can iterate through M in range from 1 to N / K using binary search.
+
+So we really have the following problem:
+A = [some 100-char pattern] * N
+B = [some 100-char pattern] * K
+Find B in A - answer yes/no.
+
+If N = 1, K = 1, then it is simple.
+If we want to check subsequences with these huge constants, then it takes
+a lot of memory and runtime. So we work with sizes that do not depend on
+K and N, or at least on one of them.
+
+We only need one contatenation of A to itself to discover every reachable
+pattern, and keep in mind that we will be getting closer to the desired
+# of them with every concatenation.
+
+So we have the 200-char string AA, it is going to be repeated N - 1 times,
+and we have the 100-char string B. If we use dynamic programming now, then
+we will end up with an array of length 200, where the last element will
+correspond to the place where the match happens, if it happens. If it does
+not, then we will have the maximum number of matched chars that we can get
+from AA, then we will check if can go on with the word B[prefix..B.len()],
+where prefix is the number we just mentioned. So we continue to do the
+same thing. It will take us at most 100 iterations to cover the whole
+string B, if we fall off, then there is no answer at all. If we get to the
+end, we will know how many joints we need to get exactly one match B in
+A * N1, where N1 is the counter that we kept increasing on every
+concatenation of type A..AA. But we can start right from that moment and
+start getting the next B without needing one more concatenation to start
+over..
+
+Will dp help with that?
+
+Suppose the poisitions we will be at after the full B acquisition are
+periodic, they have to be! So we have 100 slots at most to stop at some
+position, and if we do, then we went through one full period! Now we got
+the whole thing.
+
+Seems correct.
+
+So the really simplified problem. The rest is going to appear later.
+
+1) try to find B in A and remember the results (the result is the # of
+chars from B found in A) - call it prefix.
+
+2) increase the counter N1, then try to find B[prefix..B.len()] in AA.
+Remember the results - update the prefix.
+
+...
+
+F) increase the counter N1, then try to find B[prefix..B.len()] in AA.
+Remember the results - update the prefix.
+
+If at any step prefix reaches B.len(), then we have found B completely.
+What can we say about the poisition we found it at? We need to choose the
+minimal position - because we do not want to miss anything. Is it always
+safe to do so? Yes, look at the previous examples, plus it makes sense -
+we can choose the closest match and then use whatever we want next. If we
+pick some other match, then we will have the same # of matches but at some
+further position, which means we will have less chars to choose from. So
+we indeed should pick the earliest full match.
+
+So what is that minimal position? If it is just the end of the
+concatenated A...A string, then we are good - we have started from this
+offset of size 0, if not, then we are at some offset 1 < {l} <= 100.
+We remember that and save the character coming from {offset}..A.len(),
+then start trying to find B again - follow the same algorithm as above.
+
+1) N1 = is the same; try to find B in what you have currently, which is
+string S = A[offset..A.len()]. Run dynamic programming recognition of
+the minimal substring, which takes 10^4 ops. You have the amount of chars
+from B that are covered - prefix. You also have the new prefix if it was
+already met - 0, for example, then stop.
+
+In short, keep running until you end the period. Then multiply by whatever
+you need and report the result.
+
+To solve the original problem, use binary search to find {M}.
