@@ -87,6 +87,26 @@ impl Solution {
     }
 }
 
+/*
+ * one more update:
+ * here is what we need:
+ * keep trying to find B in A, and find as many of B's in A as you can
+ * - until you hit the visited cache, where the key is the position
+ * after a full match. As a result, we know that 1 B needs Y1 A's,
+ * 2 B's need Y2 A's, ..., X1 B's need Y3 A's. So we know the whole
+ * pattern. We can now fast-forward by to the point where we know
+ * how many A's we need to get n2 B's. How do we fast-forward?
+ * Take the n2, divide it into the maximum key from the map that we
+ * know - x - we get exactly this number of B's for this - mem(x) -
+ * number of A's in a row. Then calculate {n1 - mem(x)} - we need to
+ * get this # of A's, search the whole map to find the closet we can
+ * get to it. Okay, so we know exactly how many A's we need to cover
+ * the whole [B; n2] string. We need to know how many of A's have left,
+ * and spend them on B's now. So we know the value of the function V,
+ * and we are going to look for the argument that satifies it in the
+ * best way (max x : mem(x) <= V, idelly = V).
+ *
+ */
 fn main() {
     Solution::get_max_repetitions
         (String::from("a"), 1, String::from("a"), 1);
