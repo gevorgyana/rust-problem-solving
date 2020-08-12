@@ -334,3 +334,51 @@ answer. If you have found some characters, from 2 to B.len(), then if
 B.len(), then see where we found the last one - if at some position
 that we have already seen, then stop - we have found a cycle. If not,
 then go on, but remember that we had been at this position.
+
+-- See also the main.rs comments.
+Don't even need to remember the position, just remember the proportions
+of how many As we can get from how many Bs. That's it. Stop when you
+recognize the cycle.
+-- Example solutions
+
+abcdefg
+acf:
+1 A = 1 B and stopped at one-before-the-last char
+2 A = 2 B and stopped at one-before-the-last char
+found cycle
+Need N B's? take N A's.
+How many A's are left? L = s1 - N.
+We really need to get B N * M times.
+We only got it N times.
+Now we need to get it N * M times, where M is from 0 to whatever.
+L / N = M
+
+No! Get as many B's as you can from the # of A's that you have.
+We got N ones. Then divide N / N and get one. For this case this is
+indeed correct.
+
+Generally, see how we can get B's from A's. We will have a rule that
+has length up to 100 for consecutive values of the argument. Then we
+count how many B's we can get from the # of A's that we have. Say it is
+S. Then we know that the lenght of one block of B's is K, so we need
+to know how many blocks we can get - divide S / K and you will get M,
+which is the maximum value that problem asks for.
+
+--
+abcdefg
+aca:
+1 A = 1 B and stopped at the first char
+4 A = 2 B and stopped at the first char
+found the cycle
+
+--
+abcdefgaa
+aca:
+1 A = 1 B and stopped at one-before-the-last-character
+2 A = 2 B and stopped at one-before-the-last character.
+found the cycle
+
+==
+(use that greedy approach to get the most economic substring. we can't
+do better than that, and we do at least as good as with all other
+possibilities)
