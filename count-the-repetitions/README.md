@@ -318,3 +318,19 @@ In short, keep running until you end the period. Then multiply by whatever
 you need and report the result.
 
 To solve the original problem, use binary search to find {M}.
+
+--- Maybe it is not even dp, but one more memoization problem.
+
+First, I need to solve it here to understand what the code should look
+like. Maybe there is no need in using dynamic programming at all to
+find the subsequences.
+
+A, B given
+
+try to find the first letter in A, then try to find the second letter
+there, then third, and so on. Stop when you have finished. If you have
+not found the first character of B in A, then stop - there is no
+answer. If you have found some characters, from 2 to B.len(), then if
+B.len(), then see where we found the last one - if at some position
+that we have already seen, then stop - we have found a cycle. If not,
+then go on, but remember that we had been at this position.
