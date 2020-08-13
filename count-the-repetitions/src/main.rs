@@ -1,5 +1,7 @@
-struct Solution {}
+fn main() {
 
+}
+struct Solution {}
 impl Solution {
     pub fn get_max_repetitions(ac: String, n1: i32, b: String, n2: i32) -> i32 {
         let mut cache: std::collections::HashSet::<usize>
@@ -48,26 +50,26 @@ impl Solution {
             }
         }
 
-        println!("results {:?}", results);
+        // println!("results {:?}", results);
 
         let greater_key: (&usize, &usize)
             = results.iter().max().unwrap();
-        println!("greater key {:?}", greater_key);
+        // println!("greater key {:?}", greater_key);
         let hm_bs_can_get: usize
-            = (n1 + 1) as usize
+            = n1 as usize
             / *greater_key.1
             * *greater_key.0
             ;
-        println!("hm_bs w/o remainder {}", hm_bs_can_get);
+        // println!("hm_bs w/o remainder {}", hm_bs_can_get);
         let hm_as_are_wasted: usize
             = hm_bs_can_get
             / *greater_key.0
             * *greater_key.1
             ;
-        println!("hm_as_ are wasted {}", hm_as_are_wasted);
+        // println!("hm_as_ are wasted {}", hm_as_are_wasted);
         let remainder_of_as
-            = (n1 + 1) as usize - hm_as_are_wasted;
-        println!("remainder of as {}", remainder_of_as);
+            = n1 as usize - hm_as_are_wasted;
+        // println!("remainder of as {}", remainder_of_as);
         let mut remainder_bs: usize
             = 0;
         if remainder_of_as != 0 {
@@ -77,7 +79,7 @@ impl Solution {
                 }
             }
         }
-        println!("hm_bs_from_remainder {:?}", remainder_bs);
+        // println!("hm_bs_from_remainder {:?}", remainder_bs);
 
         /*
          * If we insert consecutive elements into the map, as we are
@@ -92,19 +94,82 @@ impl Solution {
             + hm_bs_can_get
             ;
 
-        println!("can get this many bs {}", res_hm_bs);
+        // println!("can get this many bs {}", res_hm_bs);
 
-        res_hm_bs as i32 / (n2 + 1)
+        res_hm_bs as i32 / n2
     }
 }
-fn main() {
-    /*
-    Solution::get_max_repetitions
-        (String::from("a"), 1, String::from("a"), 1);
-     */
-    assert_eq!(
-        Solution::get_max_repetitions
-            (String::from("aaa"), 1, String::from("aa"), 1),
-        1
-    );
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn cs1() {
+        assert_eq!(
+            Solution::get_max_repetitions
+            // have this: a
+            // need blocks of type: a
+            // can have exactly one of those
+                (String::from("a"), 1, String::from("a"), 1),
+            1
+        );
+    }
+
+    #[test]
+    fn cs2() {
+        assert_eq!(
+            // have this: aaa
+            // need blocks of type: aa
+            // can have 1
+            Solution::get_max_repetitions
+                (String::from("aaa"), 1, String::from("aa"), 1),
+            1
+        );
+    }
+
+    #[test]
+    fn cs3() {
+        assert_eq!(
+            // have this: aaa aaa aaa
+            //             1  2 3  1
+            // need these: aa
+            Solution::get_max_repetitions
+                (String::from("aaa"), 3, String::from("aa"), 1),
+            4
+        );
+    }
+
+    #[test]
+    fn cs4() {
+        assert_eq!(
+            Solution::get_max_repetitions
+            // aaa aaa aaa aaa
+            //  1  2 3  1  2 3
+                (String::from("aaa"), 4, String::from("aa"), 1),
+            6 // can get 6 "aa"s, / 2 as each block has 2 of them
+        );
+    }
+
+    #[test]
+    fn cs5() {
+        assert_eq!(
+            Solution::get_max_repetitions
+                (String::from("a"), 1, String::from("a"), 2),
+            0
+        );
+    }
+
+    fn lc1() {
+        assert_eq!(
+            // have this
+            // acb acb acb acb acb
+            //   1   1   1   1
+            // need these groups
+            // ab ab
+            Solution::get_max_repetitions
+                (String::from("acb"), 4, String::from("ab"), 2),
+
+            2
+        );
+    }
 }

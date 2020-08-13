@@ -1,8 +1,22 @@
 fn main() {
-    let x = vec![1, 2, 3];
-    let mut y = &x[0..3];
-    println!("{:?}", y);
-    y = &y[1..3];
-    println!("{:?}", y);
-    println!("{:?}", y[0]);
+    let mut a = String::from("aaaaaaaaaaaaaaaaaa");
+    let mut b = String::from("bbbbbbbbbbbbbbbbbb");
+    let mut c = String::from("cccccccccccccccccc");
+    let mut d = String::from("dddddddddddddddddd");
+    let mut e = String::from("eeeeeeeeeeeeeeeeee");
+    let mut f = String::from("ffffffffffffffffff");
+
+    unsafe {
+        /*
+        static mut f: i32 = 0;
+        loop {
+            if f == 10000 {
+                break;
+            } else {
+                let g = s.clone();
+                f += 1;
+            }
+        }
+         */
+    }
 }
