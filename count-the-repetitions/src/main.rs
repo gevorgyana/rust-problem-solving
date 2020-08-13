@@ -1,113 +1,110 @@
 struct Solution {}
 
 impl Solution {
-    pub fn get_max_repetitions(a: String, n1: i32, b: String, n2: i32) -> i32 {
-
-        let mut vis_start: std::collections::HashSet::<usize>
+    pub fn get_max_repetitions(ac: String, n1: i32, b: String, n2: i32) -> i32 {
+        let mut cache: std::collections::HashSet::<usize>
             = std::collections::HashSet::<usize>::new();
-        let mut prefix: usize = 0;
-        let mut start: usize = 0;
-        let mut wip_a = a.clone();
-        let mut hm_a_needed: usize = 0;
-
-        // the goal now is to stop when we hit the same period
-        while prefix < b.len() {
-            let current_prefix = prefix;
-            println!("looking for {:?}",
-                     b.chars().nth(current_prefix));
-            // trying to find it in the current range
-            for i in start..wip_a.len() {
-                if wip_a.chars().nth(i) == b.chars().nth(prefix) {
-                    prefix += 1;
-                    start = i + 1;
-                }
-            }
-
-            if current_prefix == prefix {
-                println!("add one more A or stop?");
-                // it makes sense to add one more when we have it
-                // before the {start} - otherwise we should quit
-                let mut stop = true;
-                for i in 0..start {
-                    if a.chars().nth(i) == b.chars().nth(prefix) {
-                        stop = false;
-                        break;
+        let mut a = ac.clone();
+        let mut a_position = 0;
+        let mut a_used_counter = 0;
+        let mut b_iter = 0;
+        let mut results: std::collections::HashMap::<usize, usize>
+            = std::collections::HashMap::<usize, usize>::new();
+        loop {
+            let mut prefix_recognized = 0;
+            while prefix_recognized < b.len() {
+                let prefix_recognized_cur = prefix_recognized;
+                for i in a_position..a.len() {
+                    if a.chars().nth(i)
+                        == b.chars().nth(prefix_recognized)
+                    {
+                        prefix_recognized += 1;
+                        a_position += 1;
                     }
                 }
-                if stop {
-                    panic!("it is officially done");
-                } else {
-                    println!("it makes sense to add one more A");
-                    wip_a.push_str(&a.clone());
-                    hm_a_needed += 1;
-                    continue;
+
+                if prefix_recognized == prefix_recognized_cur
+                    || (prefix_recognized < b.len() &&
+                        a_position == a.len())
+                {
+                    if a.contains(b.chars().nth(prefix_recognized).unwrap()) {
+                        a_position = 0;
+                        a_used_counter += 1;
+                        a = ac.clone();
+                    } else {
+                        panic!("stop - failure");
+                    }
                 }
             }
 
-            println!("success with start {}", start - 1);
-            if start == a.len() || vis_start.contains(&start) {
-                println!("found a cycle");
+            // println!("success with cached value {}", a_position);
+
+            if cache.contains(&a_position) {
+                break;
             } else {
-                vis_start.insert(start);
+                b_iter += 1;
+                cache.insert(a_position);
+                results.insert(b_iter, a_used_counter + 1);
             }
         }
 
-        println!("done with this many concatenations {}", hm_a_needed);
+        println!("results {:?}", results);
+
+        let greater_key: (&usize, &usize)
+            = results.iter().max().unwrap();
+        println!("greater key {:?}", greater_key);
+        let hm_bs_can_get: usize
+            = (n1 + 1) as usize
+            / *greater_key.1
+            * *greater_key.0
+            ;
+        println!("hm_bs w/o remainder {}", hm_bs_can_get);
+        let hm_as_are_wasted: usize
+            = hm_bs_can_get
+            / *greater_key.0
+            * *greater_key.1
+            ;
+        println!("hm_as_ are wasted {}", hm_as_are_wasted);
+        let remainder_of_as
+            = (n1 + 1) as usize - hm_as_are_wasted;
+        println!("remainder of as {}", remainder_of_as);
+        let mut remainder_bs: usize
+            = 0;
+        if remainder_of_as != 0 {
+            for i in results {
+                if i.0 == remainder_of_as as usize {
+                    remainder_bs = i.0;
+                }
+            }
+        }
+        println!("hm_bs_from_remainder {:?}", remainder_bs);
 
         /*
-         * We know that we can fit BB..B (K1 reps) into AA..A (N1 reps),
-         * and that from that point on, we will keep repeating the
-         * pattern. We need to solve for N1 = N and K1 = K.
-         * We have the following map:
-         * hm_bs -> (hm_a_needed, completed_at)
-         * and we also know the length of the period.
-         * so we fast-forward to the case of K1 = K by dividing it
-         * by the lenght of the period, and do not forget to multiply
-         * the # of A's used by that same value. See that
-         * K_residual -> (hm_a_needed, pos) - we know that we need this
-         * {hm_a_needed} As to get the thing done. Do we have this many?
-         * Yes -> done.
-
-         * The problem is that we can only do this trick with the small
-         * strings - each 100 chars at max.
-
-         * small upadte: what if there is no sense in binary search at
-         * all? just convert the string [s2; n2] in a naive way and
-         * waste 10^6 of time for that, then do the following: try
-         * the algorithm with this string and arbitrary # of A's.
-         * We have a string B that is of length 10^8.
-         * We have the period whoose length is 100 at max. So we spend
-         * 100 units of memory and 10^8 time to finish. We then can
-         * devise the number M and return it. We know we have this map
-         * of length 100, and we fast-forward as explained in previous
-         * paragraph. This should work.
+         * If we insert consecutive elements into the map, as we are
+         * going up to 100 positions, and on stopping at each position
+         * we increase the # of b's we have found in some # of a's.
+         * therefore, we are guaranteed that we will have a range of
+         * the following form in the map: 0, 1, ..., N, where N < 100.
          */
 
-        1
+        let res_hm_bs
+            = remainder_bs
+            + hm_bs_can_get
+            ;
+
+        println!("can get this many bs {}", res_hm_bs);
+
+        res_hm_bs as i32 / (n2 + 1)
     }
 }
-
-/*
- * one more update:
- * here is what we need:
- * keep trying to find B in A, and find as many of B's in A as you can
- * - until you hit the visited cache, where the key is the position
- * after a full match. As a result, we know that 1 B needs Y1 A's,
- * 2 B's need Y2 A's, ..., X1 B's need Y3 A's. So we know the whole
- * pattern. We can now fast-forward by to the point where we know
- * how many A's we need to get n2 B's. How do we fast-forward?
- * Take the n2, divide it into the maximum key from the map that we
- * know - x - we get exactly this number of B's for this - mem(x) -
- * number of A's in a row. Then calculate {n1 - mem(x)} - we need to
- * get this # of A's, search the whole map to find the closet we can
- * get to it. Okay, so we know exactly how many A's we need to cover
- * the whole [B; n2] string. We need to know how many of A's have left,
- * and spend them on B's now. So we know the value of the function V,
- * and we are going to look for the argument that satifies it in the
- * best way (max x : mem(x) <= V, idelly = V).
- *
- */
 fn main() {
+    /*
     Solution::get_max_repetitions
         (String::from("a"), 1, String::from("a"), 1);
+     */
+    assert_eq!(
+        Solution::get_max_repetitions
+            (String::from("aaa"), 1, String::from("aa"), 1),
+        1
+    );
 }
