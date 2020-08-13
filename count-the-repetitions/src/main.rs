@@ -1,18 +1,13 @@
 fn main() {
-    assert_eq!(
-        Solution::get_max_repetitions
-            (String::from("a"), 1, String::from("a"), 2),
-        0
-    );
 }
 struct Solution {}
 impl Solution {
     pub fn get_max_repetitions(ac: String, n1: i32, b: String, n2: i32) -> i32 {
 
-        println!("a {:?}", ac);
-        println!("b {:?}", b);
-        println!("n1 {}", n1);
-        println!("n2 {}", n2);
+        // println!("a {:?}", ac);
+        // println!("b {:?}", b);
+        // println!("n1 {}", n1);
+        // println!("n2 {}", n2);
 
         if n1 == 0 || n2 == 0 {
             return 0;
@@ -63,7 +58,8 @@ impl Solution {
                         a_used_counter += 1;
                         a = ac.clone();
                     } else {
-                        panic!("stop - failure");
+                        // we can't find B in A
+                        return 0;
                     }
                 }
             }
@@ -117,10 +113,12 @@ impl Solution {
             }
         }
 
+        /*
         println!("spent {}, acquired {}",
                  as_spent,
                  bs_acquired
         );
+         */
 
         if (as_spent == n1 as usize) {
             return bs_acquired as i32 / n2;
@@ -130,25 +128,26 @@ impl Solution {
         let as_avail_when_cycling
             = n1 as usize - as_spent;
 
-        println!("as_avail_when_cycling {}", as_avail_when_cycling);
+        // println!("as_avail_when_cycling {}", as_avail_when_cycling);
 
         let cycle_gain
             = trail[n - 1].0 - trail[first_cyclic - 1].0;
         let cycle_cost
             = trail[n - 1].1 - trail[first_cyclic - 1].1;
 
-        println!("cycle-gain {}", cycle_gain);
-        println!("cycle-cost {}", cycle_cost);
-
+        // println!("cycle-gain {}", cycle_gain);
+        // println!("cycle-cost {}", cycle_cost);
 
         let cycles_done
             = as_avail_when_cycling
             / cycle_cost
             ;
 
+        /*
         println!("cycles done {}",
                  cycles_done
         );
+         */
 
         bs_acquired
             += cycles_done
@@ -159,24 +158,30 @@ impl Solution {
             * cycle_cost
             ;
 
+        /*
         println!("Updated data: spent {}, acquired {}",
                  as_spent,
                  bs_acquired
         );
+         */
 
         let as_avail_after_cycle = n1 as usize - as_spent;
 
+        /*
         println!("after all we have this many resources {}",
                  as_avail_after_cycle
         );
+         */
 
         let mut best_residue: usize = 0;
         for i in first_cyclic..n - 1 {
 
+            /*
             println!("trying this i-th residue {}", i);
             println!("its cost is {}",
                      (trail[i].1 - trail[first_cyclic - 1].1)
             );
+             */
 
             if as_avail_after_cycle
                 == (trail[i].1 - trail[first_cyclic - 1].1)
@@ -186,9 +191,11 @@ impl Solution {
                     (trail[i].0 - trail[first_cyclic - 1].0)
                 );
 
+                /*
                 println!("best residue {}",
                          best_residue
                 );
+                 */
             }
         }
 
@@ -310,6 +317,15 @@ mod test {
             Solution::get_max_repetitions
                 (String::from("bacaba"), 3, String::from("abacab"), 1),
             2
+        );
+    }
+
+    #[test]
+    fn lc4() {
+        assert_eq!(
+            Solution::get_max_repetitions
+                (String::from("musicforever"), 10, String::from("lovelive"), 100000),
+            0
         );
     }
 }

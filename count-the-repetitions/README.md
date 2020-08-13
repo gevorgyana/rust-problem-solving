@@ -397,3 +397,6 @@ The length of the cycle <= 100, therefore we will have enough time.
 
 We know everything that happens insdie the cycle, but we don't know
 how to get there, so getting there will take O(100) time.
+
+The first part of the trail - before the first repeated element
+- might be part of the cycle too - but we never know!
