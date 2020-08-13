@@ -1,13 +1,18 @@
 fn main() {
+    println!("!baba");
+    println!("!baab");
     assert_eq!(
-        // bacaba bacaba bacaba
-        //            x      x
-        // here, we have the cycle that starts not from the first
-        // position, so we'll have a problem; currently this does
-        // not pass
+        // have this: baba baba baba baba baba ..
+        //                 x      x       x
+        // (11 times)
+        // need blocks of type: baab
+        // we can get 2 baab's from every 3 baba's
+        // 11 / 3 = 3, so we can get 3 * 2 = 6 easily
+        // then we are left with 2 as a residue, we will get 1 from
+        // it, which is 7 in total
         Solution::get_max_repetitions
-            (String::from("bacaba"), 3, String::from("abacab"), 1),
-        2
+            (String::from("baba"), 11, String::from("baab"), 1),
+        7
     );
 }
 struct Solution {}
@@ -24,9 +29,9 @@ impl Solution {
         let mut a_position = 0;
         let mut a_used_counter = 0;
         let mut b_iter = 0;
-        let mut results: std::collections::HashMap::<usize, usize>
-            = std::collections::HashMap::<usize, usize>::new();
         let mut trail: Vec<(usize, usize)>
+            = vec![];
+        let mut trail_positions: Vec<usize>
             = vec![];
         loop {
 
@@ -76,65 +81,85 @@ impl Solution {
             // println!("?success with cached value {}", a_position);
 
             if cache.contains(&a_position) {
+                trail.push((b_iter + 1, a_used_counter + 1));
+                trail_positions.push(a_position);
                 break;
             } else {
                 // println!("found 1 more at {}", a_position);
                 b_iter += 1;
                 cache.insert(a_position);
-                results.insert(b_iter, a_used_counter + 1);
-                trail.push((b_iter, a_used_counter));
+                trail.push((b_iter, a_used_counter + 1));
+                trail_positions.push(a_position);
             }
         }
 
-        println!("results {:?}", results);
         println!("the trail {:?}", trail);
+        println!("trail positions {:?}", trail_positions);
 
-        let greater_key: (&usize, &usize)
-            = results.iter().max().unwrap();
-        // println!("greater key {:?}", greater_key);
-        let hm_bs_can_get: usize
-            = n1 as usize
-            / *greater_key.1
-            * *greater_key.0
-            ;
-        // println!("hm_bs w/o remainder {}", hm_bs_can_get);
-        let hm_as_are_wasted: usize
-            = hm_bs_can_get
-            / *greater_key.0
-            * *greater_key.1
-            ;
-        // println!("hm_as_ are wasted {}", hm_as_are_wasted);
-        let remainder_of_as
-            = n1 as usize - hm_as_are_wasted;
-        // println!("remainder of as {}", remainder_of_as);
-        let mut remainder_bs: usize
-            = 0;
-        if remainder_of_as != 0 {
-            for i in results {
-                if i.1 == remainder_of_as as usize {
-                    remainder_bs = i.0;
-                }
+        let mut as_spent: usize = 0;
+        let mut bs_acquired: usize = 0;
+
+        let mut first_cyclic: usize = 0;
+        let n = trail.len();
+        for i in 1..n {
+            if trail_positions[n - 1 - i] == trail_positions[n - 1] {
+                first_cyclic = n - i;
+            }
+        }
+        println!("first cyclic {}", first_cyclic);
+
+        // before the cycle we try to get to the cycle
+        for i in 0..first_cyclic {
+            if trail[i].1 <= n1 as usize {
+                bs_acquired = trail[i].0;
+                as_spent = trail[i].1;
             }
         }
 
-        // println!("hm_bs_from_remainder {:?}", remainder_bs);
+        println!("spent {}, acquired {}",
+                 as_spent,
+                 bs_acquired
+        );
 
-        /*
-         * If we insert consecutive elements into the map, as we are
-         * going up to 100 positions, on stopping at each position
-         * we increase the # of b's we have found in some # of a's.
-         * therefore, we are guaranteed that we will have a range of
-         * the following form in the map: 0, 1, ..., N, where N < 100.
-         */
+        if (as_spent == n1 as usize) {
+            return bs_acquired as i32;
+        }
 
-        let res_hm_bs
-            = remainder_bs
-            + hm_bs_can_get
+        // fast-forward
+        let as_avail_when_cycling
+            = n1 as usize - as_spent;
+        let cycle_gain
+            = trail[n - 1].0 - trail[first_cyclic - 1].0;
+        let cycle_cost
+            = trail[n - 1].1 - trail[first_cyclic - 1].1;
+
+        let cycles_done
+            = as_avail_when_cycling
+            / cycle_cost
             ;
 
-        // println!("can get this many bs {}", res_hm_bs);
+        bs_acquired
+            += cycles_done
+            * cycle_gain;
 
-        res_hm_bs as i32 / n2
+        as_spent
+            += cycles_done
+            * cycle_cost
+            ;
+
+        let as_avail_after_cycle = n1 as usize - as_spent;
+        for i in first_cyclic..n - 1 {
+            if as_avail_after_cycle
+                == (trail[i].1 - trail[first_cyclic - 1].1)
+            {
+                as_spent += as_avail_after_cycle;
+                bs_acquired
+                    += (trail[i].0 - trail[first_cyclic - 1].0);
+                break;
+            }
+        }
+
+        bs_acquired as i32 / n2
     }
 }
 
