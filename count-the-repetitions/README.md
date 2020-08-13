@@ -400,3 +400,8 @@ how to get there, so getting there will take O(100) time.
 
 The first part of the trail - before the first repeated element
 - might be part of the cycle too - but we never know!
+
+Need to maintain the 2 equal with respect to where they are located
+in the cycle elements. One of them stores the information (and the
+ones before it) of how to get to the cycle and what cost it has,
+and those after it store the information about the cycle itself.
