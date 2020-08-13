@@ -105,7 +105,7 @@ impl Solution {
 
         /*
          * If we insert consecutive elements into the map, as we are
-         * going up to 100 positions, and on stopping at each position
+         * going up to 100 positions, on stopping at each position
          * we increase the # of b's we have found in some # of a's.
          * therefore, we are guaranteed that we will have a range of
          * the following form in the map: 0, 1, ..., N, where N < 100.
@@ -197,6 +197,13 @@ mod test {
 
     #[test]
     fn lc2() {
+
+        /*
+         * x - offset 0
+         * if we remember the offset (where we say this value), then
+         * we can do it.
+         */
+
         println!("!baba");
         println!("!baab");
         assert_eq!(
@@ -210,6 +217,20 @@ mod test {
             // it, which is 7 in total
             Solution::get_max_repetitions
                 (String::from("baba"), 11, String::from("baab"), 1),
+            7
+        );
+    }
+
+    #[test]
+    fn lc3() {
+        assert_eq!(
+            // bacaba bacaba bacaba
+            //            x      x
+            // here, we have the cycle that starts not from the first
+            // position, so we'll have a problem; currently this does
+            // not pass
+            Solution::get_max_repetitions
+                (String::from("bacaba"), 3, String::from("abacab"), 1),
             7
         );
     }

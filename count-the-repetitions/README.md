@@ -382,3 +382,18 @@ found the cycle
 (use that greedy approach to get the most economic substring. we can't
 do better than that, and we do at least as good as with all other
 possibilities)
+
+===
+Huge update:
+there will be only 1 cycle, BUT  it may not start from 0-th position,
+thereofre we detect the first repeating node in the list, then we
+naively try to do whta we intended to do until we reach the cache
+barrier, which will mean we are about to enter the cycle. Then we are
+free to fast-forward, then do the same thing again, or use the
+information we have already about how we can get Bs from As for every
+# of As that does not exceed the length of the cycle.
+
+The length of the cycle <= 100, therefore we will have enough time.
+
+We know everything that happens insdie the cycle, but we don't know
+how to get there, so getting there will take O(100) time.
