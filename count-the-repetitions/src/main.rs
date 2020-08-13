@@ -1,23 +1,20 @@
 fn main() {
-    println!("!baba");
-    println!("!baab");
     assert_eq!(
-        // have this: baba baba baba baba baba ..
-        //                 x      x       x
-        // (11 times)
-        // need blocks of type: baab
-        // we can get 2 baab's from every 3 baba's
-        // 11 / 3 = 3, so we can get 3 * 2 = 6 easily
-        // then we are left with 2 as a residue, we will get 1 from
-        // it, which is 7 in total
         Solution::get_max_repetitions
-            (String::from("baba"), 11, String::from("baab"), 1),
-        7
+        // aaa aaa aaa aaa
+        //  1  2 3  4  5 6
+            (String::from("aaa"), 4, String::from("aa"), 1),
+        6 // can get 6 "aa"s, / 2 as each block has 2 of them
     );
 }
 struct Solution {}
 impl Solution {
     pub fn get_max_repetitions(ac: String, n1: i32, b: String, n2: i32) -> i32 {
+
+        println!("a {:?}", ac);
+        println!("b {:?}", b);
+        println!("n1 {}", n1);
+        println!("n2 {}", n2);
 
         if n1 == 0 || n2 == 0 {
             return 0;
@@ -128,15 +125,26 @@ impl Solution {
         // fast-forward
         let as_avail_when_cycling
             = n1 as usize - as_spent;
+
+        println!("as_avail_when_cycling {}", as_avail_when_cycling);
+
         let cycle_gain
             = trail[n - 1].0 - trail[first_cyclic - 1].0;
         let cycle_cost
             = trail[n - 1].1 - trail[first_cyclic - 1].1;
 
+        println!("cycle-gain {}", cycle_gain);
+        println!("cycle-cost {}", cycle_cost);
+
+
         let cycles_done
             = as_avail_when_cycling
             / cycle_cost
             ;
+
+        println!("cycles done {}",
+                 cycles_done
+        );
 
         bs_acquired
             += cycles_done
@@ -147,17 +155,42 @@ impl Solution {
             * cycle_cost
             ;
 
+        println!("Updated data: spent {}, acquired {}",
+                 as_spent,
+                 bs_acquired
+        );
+
         let as_avail_after_cycle = n1 as usize - as_spent;
+
+        println!("after all we have this many resources {}",
+                 as_avail_after_cycle
+        );
+
+        let mut best_residue: usize = 0;
         for i in first_cyclic..n - 1 {
+
+            println!("trying this i-th residue {}", i);
+            println!("its cost is {}",
+                     (trail[i].1 - trail[first_cyclic - 1].1)
+            );
+
             if as_avail_after_cycle
                 == (trail[i].1 - trail[first_cyclic - 1].1)
             {
-                as_spent += as_avail_after_cycle;
-                bs_acquired
-                    += (trail[i].0 - trail[first_cyclic - 1].0);
-                break;
+                best_residue = std::cmp::max(
+                    best_residue,
+                    (trail[i].0 - trail[first_cyclic - 1].0)
+                );
+
+                println!("best residue {}",
+                         best_residue
+                );
             }
         }
+
+        as_spent += as_avail_after_cycle;
+        bs_acquired
+            += best_residue;
 
         bs_acquired as i32 / n2
     }
