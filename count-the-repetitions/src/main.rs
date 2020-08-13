@@ -1,10 +1,8 @@
 fn main() {
     assert_eq!(
         Solution::get_max_repetitions
-        // aaa aaa aaa aaa
-        //  1  2 3  4  5 6
-            (String::from("aaa"), 4, String::from("aa"), 1),
-        6 // can get 6 "aa"s, / 2 as each block has 2 of them
+            (String::from("a"), 1, String::from("a"), 2),
+        0
     );
 }
 struct Solution {}
@@ -104,6 +102,12 @@ impl Solution {
             }
         }
         println!("first cyclic {}", first_cyclic);
+        // as we insert one value twice - we did that 100%!
+        // check out the algorithm again!
+        // the idea is that we have 2 elements, which are equal and
+        // we cannot get rid of any of those and still solve the
+        // problem.
+        assert_eq!(first_cyclic > 0, true);
 
         // before the cycle we try to get to the cycle
         for i in 0..first_cyclic {
@@ -119,7 +123,7 @@ impl Solution {
         );
 
         if (as_spent == n1 as usize) {
-            return bs_acquired as i32;
+            return bs_acquired as i32 / n2;
         }
 
         // fast-forward
