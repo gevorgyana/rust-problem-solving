@@ -1,9 +1,12 @@
-fn main() {
-
-}
+fn main() { }
 struct Solution {}
 impl Solution {
     pub fn get_max_repetitions(ac: String, n1: i32, b: String, n2: i32) -> i32 {
+
+        if n1 == 0 || n2 == 0 {
+            return 0;
+        }
+
         let mut cache: std::collections::HashSet::<usize>
             = std::collections::HashSet::<usize>::new();
         let mut a = ac.clone();
@@ -13,15 +16,27 @@ impl Solution {
         let mut results: std::collections::HashMap::<usize, usize>
             = std::collections::HashMap::<usize, usize>::new();
         loop {
+
+            // println!("loop");
+
             let mut prefix_recognized = 0;
             while prefix_recognized < b.len() {
+
+                // println!("while");
+
                 let prefix_recognized_cur = prefix_recognized;
                 for i in a_position..a.len() {
                     if a.chars().nth(i)
                         == b.chars().nth(prefix_recognized)
                     {
+                        a_position = i + 1;
+                        /*
+                        println!("!found b[{}] at a[{}]",
+                                 prefix_recognized,
+                                 i
+                        );
+                         */
                         prefix_recognized += 1;
-                        a_position += 1;
                     }
                 }
 
@@ -30,6 +45,7 @@ impl Solution {
                         a_position == a.len())
                 {
                     if a.contains(b.chars().nth(prefix_recognized).unwrap()) {
+                        // println!("!one more chance");
                         a_position = 0;
                         a_used_counter += 1;
                         a = ac.clone();
@@ -39,11 +55,17 @@ impl Solution {
                 }
             }
 
-            // println!("success with cached value {}", a_position);
+            /*
+             * we can even go further and remember the relations
+             * a[i] == b[j] and cache them.
+             */
+
+            // println!("?success with cached value {}", a_position);
 
             if cache.contains(&a_position) {
                 break;
             } else {
+                // println!("found 1 more at {}", a_position);
                 b_iter += 1;
                 cache.insert(a_position);
                 results.insert(b_iter, a_used_counter + 1);
@@ -51,7 +73,6 @@ impl Solution {
         }
 
         // println!("results {:?}", results);
-
         let greater_key: (&usize, &usize)
             = results.iter().max().unwrap();
         // println!("greater key {:?}", greater_key);
@@ -74,11 +95,12 @@ impl Solution {
             = 0;
         if remainder_of_as != 0 {
             for i in results {
-                if i.0 == remainder_of_as as usize {
+                if i.1 == remainder_of_as as usize {
                     remainder_bs = i.0;
                 }
             }
         }
+
         // println!("hm_bs_from_remainder {:?}", remainder_bs);
 
         /*
@@ -170,6 +192,25 @@ mod test {
                 (String::from("acb"), 4, String::from("ab"), 2),
 
             2
+        );
+    }
+
+    #[test]
+    fn lc2() {
+        println!("!baba");
+        println!("!baab");
+        assert_eq!(
+            // have this: baba baba baba baba baba ..
+            //                 x      x       x
+            // (11 times)
+            // need blocks of type: baab
+            // we can get 2 baab's from every 3 baba's
+            // 11 / 3 = 3, so we can get 3 * 2 = 6 easily
+            // then we are left with 2 as a residue, we will get 1 from
+            // it, which is 7 in total
+            Solution::get_max_repetitions
+                (String::from("baba"), 11, String::from("baab"), 1),
+            7
         );
     }
 }
