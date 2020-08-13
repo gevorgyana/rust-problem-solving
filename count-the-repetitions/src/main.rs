@@ -1,4 +1,15 @@
-fn main() { }
+fn main() {
+    assert_eq!(
+        // bacaba bacaba bacaba
+        //            x      x
+        // here, we have the cycle that starts not from the first
+        // position, so we'll have a problem; currently this does
+        // not pass
+        Solution::get_max_repetitions
+            (String::from("bacaba"), 3, String::from("abacab"), 1),
+        2
+    );
+}
 struct Solution {}
 impl Solution {
     pub fn get_max_repetitions(ac: String, n1: i32, b: String, n2: i32) -> i32 {
@@ -15,6 +26,8 @@ impl Solution {
         let mut b_iter = 0;
         let mut results: std::collections::HashMap::<usize, usize>
             = std::collections::HashMap::<usize, usize>::new();
+        let mut trail: Vec<(usize, usize)>
+            = vec![];
         loop {
 
             // println!("loop");
@@ -69,10 +82,13 @@ impl Solution {
                 b_iter += 1;
                 cache.insert(a_position);
                 results.insert(b_iter, a_used_counter + 1);
+                trail.push((b_iter, a_used_counter));
             }
         }
 
-        // println!("results {:?}", results);
+        println!("results {:?}", results);
+        println!("the trail {:?}", trail);
+
         let greater_key: (&usize, &usize)
             = results.iter().max().unwrap();
         // println!("greater key {:?}", greater_key);
@@ -231,7 +247,7 @@ mod test {
             // not pass
             Solution::get_max_repetitions
                 (String::from("bacaba"), 3, String::from("abacab"), 1),
-            7
+            2
         );
     }
 }
